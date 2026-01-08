@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import {BrowserRouter} from 'react-router-dom';
 import {StyledEngineProvider} from '@mui/material/styles';
-import AppTheme from './AppTheme.tsx';
+import AppTheme from './theme/AppTheme.tsx';
 import App from './App.tsx';
 import ErrorBoundary from "./helpers/ErrorBoundary.tsx";
 

@@ -9,11 +9,13 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import ForgotPassword from './ForgotPassword.tsx';
-import {ExpenseIcon} from '../../theme/CustomIcons.tsx';
+import {ExpenseIcon, GoogleIcon} from '../../theme/CustomIcons.tsx';
 import {useNavigate} from "react-router-dom";
 import CardComponent from "../shared/CardComponent.tsx";
 import {authService} from '../../services/authService.ts';
 import {toast} from "react-toastify";
+import {Divider} from "@mui/material";
+import GoogleLoginButton from "./GoogleLoginButton.tsx";
 
 
 export default function SignInCard() {
@@ -168,7 +170,10 @@ export default function SignInCard() {
                 >
                     {loading ? 'Signing in...' : 'Sign in'}
                 </Button>
-
+                <Divider>or</Divider>
+                <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
+                    <GoogleLoginButton/>
+                </Box>
                 <Typography sx={{textAlign: 'center', mt: 2, fontSize: '0.9rem', color: 'text.secondary'}}>
                     Don&apos;t have an account?{' '}
                     <Link href="/register" variant="body2">

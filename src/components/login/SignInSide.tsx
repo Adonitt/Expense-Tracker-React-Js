@@ -1,6 +1,6 @@
 import CssBaseline from '@mui/material/CssBaseline';
 import Stack from '@mui/material/Stack';
-import App from '../../AppTheme.tsx';
+import App from '../../theme/AppTheme.tsx';
 import ColorModeSelect from "../../theme/ColorModeSelect.tsx";
 import Content from "./Content.tsx";
 import SignInCard from "./SignInCard.tsx";

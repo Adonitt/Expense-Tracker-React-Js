@@ -1,12 +1,12 @@
 import * as React from 'react';
 import type {ThemeOptions} from '@mui/material/styles';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {colorSchemes, shadows, shape, typography} from "./theme/customizations/themePrimitive.ts";
-import {inputsCustomizations} from './theme/customizations/inputs.tsx';
-import {feedbackCustomizations} from './theme/customizations/feedback.tsx';
-import {navigationCustomizations} from './theme/customizations/navigation.tsx';
-import {dataDisplayCustomizations} from "./theme/customizations/dataDisplay.tsx";
-import {surfacesCustomizations} from "./theme/customizations/surfaces.ts";
+import {colorSchemes, shadows, shape, typography} from "./customizations/themePrimitive.ts";
+import {inputsCustomizations} from './customizations/inputs.tsx';
+import {feedbackCustomizations} from './customizations/feedback.tsx';
+import {navigationCustomizations} from './customizations/navigation.tsx';
+import {dataDisplayCustomizations} from "./customizations/dataDisplay.tsx";
+import {surfacesCustomizations} from "./customizations/surfaces.ts";
 
 
 interface AppThemeProps {

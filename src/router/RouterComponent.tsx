@@ -4,6 +4,8 @@ import Dashboard from "../components/Dashboard.tsx";
 import RegisterSide from "../components/register/RegisterSide.tsx";
 import GuestRoute from "./GuestRoute.ts";
 import PrivateRoute from "./PrivateRoute.tsx";
+import OAuthSuccess from '../components/login/OAuthSuccess.tsx';
+import UsersList from "../components/users/UsersList.tsx";
 
 function RouterComponent() {
 
@@ -24,7 +26,10 @@ function RouterComponent() {
                 <PrivateRoute>
                     <Dashboard/>
                 </PrivateRoute>}>
+
+                <Route path="/users" element={UsersList}/>
             </Route>
+            <Route path="/oauth-success" element={<OAuthSuccess/>}/>
             <Route path="*" element={<Dashboard/>}/>
         </Routes>
     )

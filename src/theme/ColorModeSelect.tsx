@@ -24,3 +24,4 @@ export default function ColorModeSelect(props: SelectProps) {
         </Select>
     );
 }
+
