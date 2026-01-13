@@ -8,7 +8,8 @@ import Typography from '@mui/material/Typography';
 import SelectContent from './SelectContent.tsx';
 import MenuContent from './MenuContent';
 import OptionsMenu from './OptionsMenu';
-import {useNavigate} from "react-router-dom";
+import {getLoggedInUser} from "../../utils/auth.ts";
+import Button from "@mui/material/Button";
 
 const drawerWidth = 240;
 
@@ -24,6 +25,9 @@ const Drawer = styled(MuiDrawer)({
 });
 
 export default function SideMenu() {
+    const user = getLoggedInUser()
+    console.log(user)
+
     return (
         <Drawer
             variant="permanent"
@@ -66,18 +70,25 @@ export default function SideMenu() {
             >
                 <Avatar
                     sizes="small"
-                    alt="Riley Carter"
+                    alt={user?.firstName + " " + user?.lastName}
                     src="/static/images/avatar/7.jpg"
                     sx={{width: 36, height: 36}}
                 />
                 <Box sx={{mr: 'auto'}}>
                     <Typography variant="body2" sx={{fontWeight: 500, lineHeight: '16px'}}>
-                        Riley Carter
+                        {user?.firstName + " " + user?.lastName}
                     </Typography>
                     <Typography variant="caption" sx={{color: 'text.secondary'}}>
-                        riley@email.com
+                        {user?.email}
                     </Typography>
                 </Box>
+                {/*<Button*/}
+                {/*    variant="outlined"*/}
+                {/*    size="small"*/}
+                {/*    onClick={toggleTheme}*/}
+                {/*>*/}
+                {/*    {themeMode === 'dark' ? 'Light' : 'Dark'}*/}
+                {/*</Button>*/}
                 <OptionsMenu/>
             </Stack>
         </Drawer>

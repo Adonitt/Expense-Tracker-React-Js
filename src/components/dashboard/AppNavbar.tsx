@@ -71,7 +71,7 @@ export default function AppNavbar() {
                     <MenuButton aria-label="menu" onClick={toggleDrawer(true)}>
                         {/*<MenuRoundedIcon />*/}
                     </MenuButton>
-                    <SideMenuMobile open={open} toggleDrawer={toggleDrawer} />
+                    <SideMenuMobile open={open} toggleDrawer={toggleDrawer}/>
                 </Stack>
             </Toolbar>
         </AppBar>

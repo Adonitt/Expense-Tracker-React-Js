@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import Divider, { dividerClasses } from '@mui/material/Divider';
+import {styled} from '@mui/material/styles';
+import Divider, {dividerClasses} from '@mui/material/Divider';
 import Menu from '@mui/material/Menu';
 import MuiMenuItem from '@mui/material/MenuItem';
-import { paperClasses } from '@mui/material/Paper';
-import { listClasses } from '@mui/material/List';
+import {paperClasses} from '@mui/material/Paper';
+import {listClasses} from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon, { listItemIconClasses } from '@mui/material/ListItemIcon';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import MenuButton from './MenuButton';
@@ -37,9 +37,9 @@ export default function OptionsMenu() {
             <MenuButton
                 aria-label="Open menu"
                 onClick={handleClick}
-                sx={{ borderColor: 'transparent' }}
+                sx={{borderColor: 'transparent'}}
             >
-                <MoreVertRoundedIcon />
+                <MoreVertRoundedIcon/>
             </MenuButton>
             <Menu
                 anchorEl={anchorEl}
@@ -47,8 +47,8 @@ export default function OptionsMenu() {
                 open={open}
                 onClose={handleClose}
                 onClick={handleClose}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                transformOrigin={{horizontal: 'right', vertical: 'top'}}
+                anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
                 sx={{
                     [`& .${listClasses.root}`]: {
                         padding: '4px',
@@ -63,16 +63,16 @@ export default function OptionsMenu() {
             >
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
                 <MenuItem onClick={handleClose}>My account</MenuItem>
-                <Divider />
+                <Divider/>
                 <MenuItem onClick={handleClose}>Add another account</MenuItem>
                 <MenuItem onClick={handleClose}>Settings</MenuItem>
-                <Divider />
+                <Divider/>
                 <MenuItem
                     onClick={logout}
                 >
                     <ListItemText>Logout</ListItemText>
                     <ListItemIcon>
-                        <LogoutRoundedIcon fontSize="small" />
+                        <LogoutRoundedIcon fontSize="small"/>
                     </ListItemIcon>
                 </MenuItem>
             </Menu>

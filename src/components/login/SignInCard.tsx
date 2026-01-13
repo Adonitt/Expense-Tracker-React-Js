@@ -9,7 +9,7 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import ForgotPassword from './ForgotPassword.tsx';
-import {ExpenseIcon, GoogleIcon} from '../../theme/CustomIcons.tsx';
+import {ExpenseIcon} from '../../theme/CustomIcons.tsx';
 import {useNavigate} from "react-router-dom";
 import CardComponent from "../shared/CardComponent.tsx";
 import {authService} from '../../services/authService.ts';

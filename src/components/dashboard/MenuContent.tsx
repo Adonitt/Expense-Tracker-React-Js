@@ -11,45 +11,54 @@ import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
+import {hasRole} from "../../utils/auth.ts";
 
 const mainListItems = [
-    { text: 'Home', icon: <HomeRoundedIcon />, path: '/' },
-    { text: 'Analytics', icon: <AnalyticsRoundedIcon />, path: '/analytics' },
-    { text: 'Users', icon: <PeopleRoundedIcon />, path: '/users' },
-    { text: 'Tasks', icon: <AssignmentRoundedIcon />, path: '/tasks' },
+    {text: 'Home', icon: <HomeRoundedIcon/>, path: '/'},
+    {text: 'Users', icon: <PeopleRoundedIcon/>, path: '/users', adminOnly: true},
+    {text: 'Income', icon: <AnalyticsRoundedIcon/>, path: '/income'},
+    {text: 'Expense', icon: <AnalyticsRoundedIcon/>, path: '/expense'},
+    {text: 'Debts', icon: <AssignmentRoundedIcon/>, path: '/debts'},
 ];
 
 const secondaryListItems = [
-    { text: 'Settings', icon: <SettingsRoundedIcon />, path: '/settings' },
-    { text: 'About', icon: <InfoRoundedIcon />, path: '/about' },
-    { text: 'Feedback', icon: <HelpRoundedIcon />, path: '/feedback' },
+    {text: 'Settings', icon: <SettingsRoundedIcon/>, path: '/settings'},
+    {text: 'About', icon: <InfoRoundedIcon/>, path: '/about'},
+    {text: 'Feedback', icon: <HelpRoundedIcon/>, path: '/feedback'},
 ];
-
 export default function MenuContent() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     return (
-        <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
+        <Stack sx={{flexGrow: 1, p: 1, justifyContent: 'space-between'}}>
             <List dense>
-                {mainListItems.map((item, index) => (
-                    <ListItem key={index} disablePadding sx={{ display: 'block' }}>
-                        <ListItemButton
-                            selected={index === 0} // ose përdor state për selected
-                            onClick={() => navigate(item.path)} // ky navigon
-                        >
-                            <ListItemIcon>{item.icon}</ListItemIcon>
-                            <ListItemText primary={item.text} />
-                        </ListItemButton>
-                    </ListItem>
-                ))}
+                {mainListItems.map((item, index) => {
+                    if (item.adminOnly && !hasRole("ADMIN")) return null;
+
+                    return (
+                        <ListItem key={index} disablePadding sx={{display: 'block'}}>
+                            <ListItemButton
+                                selected={location.pathname === item.path}
+                                onClick={() => navigate(item.path)}
+                            >
+                                <ListItemIcon>{item.icon}</ListItemIcon>
+                                <ListItemText primary={item.text}/>
+                            </ListItemButton>
+                        </ListItem>
+                    );
+                })}
             </List>
             <List dense>
                 {secondaryListItems.map((item, index) => (
-                    <ListItem key={index} disablePadding sx={{ display: 'block' }}>
-                        <ListItemButton onClick={() => navigate(item.path)}>
+                    <ListItem key={index} disablePadding sx={{display: 'block'}}>
+                        <ListItemButton
+                            selected={location.pathname === item.path}
+                            onClick={() => navigate(item.path)}
+                        >
                             <ListItemIcon>{item.icon}</ListItemIcon>
-                            <ListItemText primary={item.text} />
+                            <ListItemText primary={item.text}/>
                         </ListItemButton>
                     </ListItem>
                 ))}
@@ -57,4 +66,3 @@ export default function MenuContent() {
         </Stack>
     );
 }
-

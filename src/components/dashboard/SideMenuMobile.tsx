@@ -9,6 +9,7 @@ import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import MenuButton from './MenuButton';
 import MenuContent from './MenuContent';
 import {useNavigate} from "react-router-dom";
+import {getLoggedInUser} from "../../utils/auth.ts";
 
 interface SideMenuMobileProps {
     open: boolean | undefined;
@@ -22,6 +23,9 @@ export default function SideMenuMobile({open, toggleDrawer}: SideMenuMobileProps
         localStorage.removeItem("token");
         navigate("/login");
     }
+
+    const user = getLoggedInUser()
+
     return (
         <Drawer
             anchor="right"
@@ -53,7 +57,7 @@ export default function SideMenuMobile({open, toggleDrawer}: SideMenuMobileProps
                             sx={{width: 24, height: 24}}
                         />
                         <Typography component="p" variant="h6">
-                            Riley Carter
+                            {user?.firstName + " " + user?.lastName}
                         </Typography>
                     </Stack>
                     <MenuButton showBadge>
