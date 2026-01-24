@@ -10,6 +10,7 @@ import MenuContent from './MenuContent';
 import OptionsMenu from './OptionsMenu';
 import {getLoggedInUser} from "../../utils/auth.ts";
 import Button from "@mui/material/Button";
+import ColorModeSelect from "../../theme/ColorModeSelect.tsx";
 
 const drawerWidth = 240;
 
@@ -81,14 +82,8 @@ export default function SideMenu() {
                     <Typography variant="caption" sx={{color: 'text.secondary'}}>
                         {user?.email}
                     </Typography>
+
                 </Box>
-                {/*<Button*/}
-                {/*    variant="outlined"*/}
-                {/*    size="small"*/}
-                {/*    onClick={toggleTheme}*/}
-                {/*>*/}
-                {/*    {themeMode === 'dark' ? 'Light' : 'Dark'}*/}
-                {/*</Button>*/}
                 <OptionsMenu/>
             </Stack>
         </Drawer>

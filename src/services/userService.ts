@@ -1,4 +1,4 @@
-import { apiClient } from "../helpers/client.ts";
+import {apiClient} from "../helpers/client.ts";
 
 export interface UserListPayload {
     id: number;
@@ -9,9 +9,45 @@ export interface UserListPayload {
     email: string;
 }
 
+export interface UserDetailsPayload {
+    id: number;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    email: string;
+    role: string;
+    registeredAt: string
+    isActive: boolean
+}
+
+export interface UpdateUserPayload {
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    email: string;
+    role: string;
+    isActive: boolean;
+}
+
 export const userService = {
-    getUsers: () =>
-        apiClient<UserListPayload[]>('/users', {
-            method: 'GET',
-        }),
-};
+        getUsers: () =>
+            apiClient<UserListPayload[]>('/users', {
+                method: 'GET',
+            }),
+
+        getUserById: (id: number) =>
+            apiClient<UserDetailsPayload>(`/users/${id}`, {
+                method: 'GET'
+            }),
+
+        updateUserById: (id: number, form: object) =>
+            apiClient<UpdateUserPayload>(`/users/edit/${id}`, {
+                method: 'PUT',
+                body: form
+            }),
+
+        deleteUserById: (id: number) =>
+            apiClient(`/users/${id}`,
+                {method: 'DELETE'}),
+    }
+;
