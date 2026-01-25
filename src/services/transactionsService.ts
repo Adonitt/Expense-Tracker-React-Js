@@ -11,6 +11,8 @@ export interface TransactionsListPayload {
     category: string
 }
 
+export type TransactionType = "INCOME" | "EXPENSE";
+
 export interface TransactionDetailsPayload {
     id: number;
     debtId: number
@@ -28,15 +30,16 @@ export interface TransactionDetailsPayload {
 export interface UpdateTransactionPayload {
     category: string
     amount: number
-    type: string
+    type: TransactionType
     description: string
     date: string
 }
 
+
 export interface CreateTransactionPayload {
     category: string
     amount: number
-    type: string
+    type: TransactionType
     description: string
     date: string
 }
@@ -63,6 +66,11 @@ export const transactionsService = {
         return await apiClient<UpdateTransactionPayload>(`/transactions/edit/${id}`, {
             method: "PUT",
             body: form
+        });
+    },
+    deleteTransactionById: async (transactionId: number): Promise<void> => {
+        await apiClient(`/transactions/${transactionId}`, {
+            method: 'DELETE',
         });
     }
 }

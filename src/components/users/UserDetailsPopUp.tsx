@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import {
     Button,
@@ -13,6 +12,8 @@ import {
 } from "@mui/material";
 import {type UserDetailsPayload, userService} from "../../services/userService";
 import dayjs from "dayjs";
+import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from "@mui/icons-material/Edit";
 
 interface UserDetailsProps {
     open: boolean;
@@ -107,9 +108,11 @@ export function UserDetailsPopUp({open, onClose, userId, onEdit}: UserDetailsPro
                 )}
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" onClick={onClose}>Close</Button>
+                <Button variant="contained" color="primary" startIcon={<CloseIcon/>} onClick={onClose}>Close</Button>
+
                 <Button
                     variant="outlined"
+                    color="contained" startIcon={<EditIcon/>}
                     onClick={() => {
                         if (userId && onEdit) {
                             onEdit(userId);

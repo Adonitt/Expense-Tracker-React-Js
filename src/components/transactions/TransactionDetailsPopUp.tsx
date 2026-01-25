@@ -13,19 +13,26 @@ import {
 import type {TransactionDetailsPayload} from "../../services/transactionsService.ts";
 import {transactionsService} from "../../services/transactionsService.ts";
 import {TransactionEditPopUp} from "./TransactionEditPopUp.tsx";
+import {TransactionDeleteDialog} from "./TransactionDeleteDialog.tsx";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface TransactionDetailsPopUpProps {
     open: boolean;
     onClose: () => void;
     transactionId: number;
+    onDeleted: () => void
 }
 
-export function TransactionDetailsPopUp({open, onClose, transactionId}: TransactionDetailsPopUpProps) {
+export function TransactionDetailsPopUp({open, onClose, transactionId, onDeleted}: TransactionDetailsPopUpProps) {
     const [transaction, setTransaction] = useState<TransactionDetailsPayload | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const [editPopUpOpen, setEditPopUpOpen] = useState(false);
+
+    const [deletePopUpOpen, setDeletePopUpOpen] = useState(false);
 
     useEffect(() => {
         if (!transactionId || !open) return;
@@ -43,6 +50,11 @@ export function TransactionDetailsPopUp({open, onClose, transactionId}: Transact
     const handleEditClick = () => {
         setEditPopUpOpen(true);
     };
+
+    const handleDeleteClick = () => {
+        setDeletePopUpOpen(true);
+    }
+
 
     return (
         <>
@@ -132,13 +144,35 @@ export function TransactionDetailsPopUp({open, onClose, transactionId}: Transact
                         </Grid>
                     )}
                 </DialogContent>
+
                 <DialogActions>
-                    <Button variant="outlined" onClick={onClose}>Close</Button>
-                    <Button variant="contained" onClick={handleEditClick}>Edit</Button>
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        startIcon={<CloseIcon/>}
+                        onClick={onClose}
+                    >
+                        Close
+                    </Button>
+
+                    {transaction?.category !== 'DEBT' && (
+                        <>
+                            <Button variant="contained" color="primary" startIcon={<EditIcon/>}
+                                    onClick={handleEditClick}>
+                                Edit
+                            </Button>
+                            <Button variant="contained" color="error" startIcon={<DeleteIcon/>}
+                                    onClick={handleDeleteClick}>
+                                Delete
+                            </Button>
+
+                        </>
+                    )}
                 </DialogActions>
+
+
             </Dialog>
 
-            {/* Edit Popup */}
             {transaction && (
                 <TransactionEditPopUp
                     open={editPopUpOpen}
@@ -147,9 +181,26 @@ export function TransactionDetailsPopUp({open, onClose, transactionId}: Transact
                     onSaved={() => {
                         setEditPopUpOpen(false);
                         transactionsService.getTransactionById(transactionId).then(res => setTransaction(res));
+                        onDeleted()
                     }}
                 />
             )}
+
+            {
+                transaction && (
+                    <TransactionDeleteDialog
+                        open={deletePopUpOpen}
+                        onClose={() => setDeletePopUpOpen(false)}
+                        transactionId={transactionId}
+                        onDelete={() => {
+                            setDeletePopUpOpen(false);
+                            onDeleted();
+                        }}
+                    />
+
+
+                )
+            }
         </>
     );
 }

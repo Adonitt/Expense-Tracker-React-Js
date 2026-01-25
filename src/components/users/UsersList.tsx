@@ -1,19 +1,14 @@
 // pages/UsersPage.tsx
-import { useEffect, useState } from "react";
-import { type UserListPayload, userService } from "../../services/userService";
-import {
-    DataGrid,
-    GridActionsCellItem,
-    type GridColDef,
-    type GridRowParams
-} from "@mui/x-data-grid";
-import { Box, Typography } from "@mui/material";
+import {useEffect, useState} from "react";
+import {type UserListPayload, userService} from "../../services/userService";
+import {DataGrid, GridActionsCellItem, type GridColDef, type GridRowParams} from "@mui/x-data-grid";
+import {Box, Typography} from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PageContainer from "./PageContainer";
-import { UserDetailsPopUp } from "./UserDetailsPopUp.tsx";
-import { UserEditPopUp } from "./UserEditPopUp.tsx";
-import { DeleteUserDialog } from "./DeleteUserDialog.tsx";
+import {UserDetailsPopUp} from "./UserDetailsPopUp.tsx";
+import {UserEditPopUp} from "./UserEditPopUp.tsx";
+import {DeleteUserDialog} from "./DeleteUserDialog.tsx";
 
 export function UsersList() {
     const [users, setUsers] = useState<UserListPayload[]>([]);
@@ -58,12 +53,12 @@ export function UsersList() {
     };
 
     const columns: GridColDef[] = [
-        { field: "id", headerName: "ID", width: 70 },
-        { field: "firstName", headerName: "First Name", width: 150 },
-        { field: "lastName", headerName: "Last Name", width: 150 },
-        { field: "email", headerName: "Email", width: 200 },
-        { field: "isActive", headerName: "Active", width: 200, type: "boolean" },
-        { field: "role", headerName: "Role", width: 200 },
+        {field: "id", headerName: "ID", width: 70},
+        {field: "firstName", headerName: "First Name", width: 150},
+        {field: "lastName", headerName: "Last Name", width: 150},
+        {field: "email", headerName: "Email", width: 200},
+        {field: "isActive", headerName: "Active", width: 200, type: "boolean"},
+        {field: "role", headerName: "Role", width: 200},
         {
             field: "actions",
             type: "actions",
@@ -72,13 +67,13 @@ export function UsersList() {
             getActions: (params) => [
                 <GridActionsCellItem
                     key="edit"
-                    icon={<EditIcon />}
+                    icon={<EditIcon/>}
                     label="Edit"
                     onClick={() => handleEdit(params.row)}
                 />,
                 <GridActionsCellItem
                     key="delete"
-                    icon={<DeleteIcon />}
+                    icon={<DeleteIcon/>}
                     label="Delete"
                     onClick={(e) => {
                         e.stopPropagation();
@@ -100,7 +95,7 @@ export function UsersList() {
 
     return (
         <PageContainer title="Users List">
-            <Box sx={{ width: "100%" }}>
+            <Box sx={{width: "100%"}}>
                 {error ? (
                     <Typography color="error">{error}</Typography>
                 ) : (
@@ -140,7 +135,9 @@ export function UsersList() {
             <DeleteUserDialog
                 open={deleteDialogOpen}
                 userId={deleteUserId}
-                onClose={() => setDeleteDialogOpen(false)}
+                onClose={() => {
+                    setDeleteDialogOpen(false)
+                }}
                 onDeleted={fetchUsers}
             />
         </PageContainer>

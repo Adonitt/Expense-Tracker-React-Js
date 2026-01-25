@@ -58,27 +58,48 @@ export function TransactionEditPopUp({open, onClose, transactionId, onSaved}: Tr
 
     const handleSave = async () => {
         if (!transaction) return;
+
+        // ✅ Simple validation
+        if (amount <= 0) {
+            toast.error("Amount must be greater than 0");
+            return;
+        }
+        if (!type) {
+            toast.error("Type is required");
+            return;
+        }
+        if (!category) {
+            toast.error("Category is required");
+            return;
+        }
+        if (!description.trim()) {
+            toast.error("Description is required");
+            return;
+        }
+        if (!date) {
+            toast.error("Date is required");
+            return;
+        }
+
         setSaving(true);
         setError(null);
 
         try {
-            await transactionsService.updateTransactionById({
-                category,
-                amount,
-                type,
-                description,
-                date,
-            }, transactionId,);
+            await transactionsService.updateTransactionById(
+                {category, amount, type, description, date},
+                transactionId
+            );
+            toast.success(`Transaction with ID: ${transactionId} updated successfully!`);
+
             if (onSaved) onSaved();
             onClose();
-            toast.success('Transaction with ID: ' + transactionId + 'updated successfully!')
-
         } catch (err: any) {
-            toast.error(err.message || "Failed to update transaction with ID: " + transactionId + ' ...')
+            toast.error(err.message || `Failed to update transaction with ID: ${transactionId}`);
         } finally {
             setSaving(false);
         }
     };
+
     const incomeCategories = ["SALARY", "FREELANCE", "BUSINESS", "INVESTMENT", "GIFTS", "SAVINGS", "OTHER"];
     const expenseCategories = ["RENT", "GROCERIES", "UTILITIES", "SUBSCRIPTIONS", "TRANSPORT", "HEALTHCARE", "ENTERTAINMENT", "EDUCATION", "TAXES", "INSURANCE", "SHOPPING", "TRAVEL", "OTHER"];
 
@@ -143,16 +164,16 @@ export function TransactionEditPopUp({open, onClose, transactionId, onSaved}: Tr
                         </Grid>
 
                         <Grid size={{xs: 12, sm: 6}}>
-                            <Paper sx={{ p: 2, borderRadius: 2 }}>
-                                <Typography variant="overline" sx={{ mb: 1, display: 'block' }}>Category</Typography>
+                            <Paper sx={{p: 2, borderRadius: 2}}>
+                                <Typography variant="overline" sx={{mb: 1, display: 'block'}}>Category</Typography>
                                 <TextField
                                     select
                                     fullWidth
                                     value={category}
                                     onChange={(e) => setCategory(e.target.value)}
-                                    SelectProps={{ native: true }}
+                                    SelectProps={{native: true}}
                                     variant="outlined"
-                                    sx={{ backgroundColor: 'background.default' }}
+                                    sx={{backgroundColor: 'background.default'}}
                                 >
                                     {(type === "INCOME" ? incomeCategories : expenseCategories).map(cat => (
                                         <option key={cat} value={cat}>{cat}</option>

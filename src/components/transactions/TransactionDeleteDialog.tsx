@@ -1,38 +1,40 @@
 import {Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography} from "@mui/material";
 import {useState} from "react";
+import {transactionsService} from "../../services/transactionsService.ts";
 import {toast} from "react-toastify";
-import {userService} from "../../services/userService";
 
-interface DeleteUserDialogProps {
-    userId: number | null,
-    open: boolean,
-    onClose: () => void,
-    onDeleted: () => void
+interface TransactionDeleteDialogProps {
+    open: boolean
+    onClose: () => void
+    transactionId: number
+    onDelete: () => void
 }
 
-export function DeleteUserDialog({userId, open, onClose, onDeleted}: DeleteUserDialogProps) {
+export function TransactionDeleteDialog({open, onClose, transactionId, onDelete}: TransactionDeleteDialogProps) {
+
     const [loading, setLoading] = useState(false);
 
     const handleDelete = async () => {
-        if (!userId) return;
+        if (!transactionId) return
+
         setLoading(true);
         try {
-            await userService.deleteUserById(userId);
-            toast.success(`User ${userId} deleted successfully`);
-            onDeleted();
-            onClose();
-        } catch (err: any) {
-            toast.error(err.message || "Failed to delete user");
+            await transactionsService.deleteTransactionById(transactionId)
+            toast.success(`Transaction ${transactionId} deleted successfully`)
+            onDelete()
+            onClose()
+        } catch (err) {
+            toast.error(err.message || "Failed to delete transaction")
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }
 
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogTitle>Confirm Delete</DialogTitle>
             <DialogContent dividers>
-                <Typography>Are you sure you want to delete user {userId}?</Typography>
+                <Typography>Are you sure you want to delete user {transactionId}?</Typography>
             </DialogContent>
             <DialogActions>
                 <Button variant="outlined" onClick={onClose} disabled={loading}>Cancel</Button>
@@ -41,5 +43,5 @@ export function DeleteUserDialog({userId, open, onClose, onDeleted}: DeleteUserD
                 </Button>
             </DialogActions>
         </Dialog>
-    );
+    )
 }
