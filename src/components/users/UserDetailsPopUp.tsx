@@ -1,4 +1,4 @@
-// UserDetailsPopUp.tsx
+
 import * as React from "react";
 import {
     Button,

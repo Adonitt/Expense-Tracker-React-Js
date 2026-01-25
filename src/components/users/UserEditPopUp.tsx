@@ -45,7 +45,6 @@ export const UserEditPopUp = ({open, onClose, userId, onSaved}: Props) => {
                     isActive: res.isActive
                 });
             })
-
             .catch(err => {
                     setError(err.message);
                     toast.error('Failed to update user with ID: ' + userId + ' ...')
@@ -161,7 +160,7 @@ export const UserEditPopUp = ({open, onClose, userId, onSaved}: Props) => {
             <DialogActions>
                 <Button variant="outlined" onClick={onClose} disabled={saving}>Cancel</Button>
                 <Button variant="contained" onClick={handleSave}
-                        disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
+                        disabled={saving}>{saving ? "Saving..." : "Save Changes"}</Button>
             </DialogActions>
         </Dialog>
     );

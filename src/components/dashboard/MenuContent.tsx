@@ -17,8 +17,8 @@ import {hasRole} from "../../utils/auth.ts";
 const mainListItems = [
     {text: 'Home', icon: <HomeRoundedIcon/>, path: '/'},
     {text: 'Users', icon: <PeopleRoundedIcon/>, path: '/users', adminOnly: true},
-    {text: 'Income', icon: <AnalyticsRoundedIcon/>, path: '/income'},
-    {text: 'Expense', icon: <AnalyticsRoundedIcon/>, path: '/expense'},
+    {text: 'Transactions', icon: <AnalyticsRoundedIcon/>, path: '/transactions'},
+    // {text: 'Expense', icon: <AnalyticsRoundedIcon/>, path: '/expense'},
     {text: 'Debts', icon: <AssignmentRoundedIcon/>, path: '/debts'},
 ];
 

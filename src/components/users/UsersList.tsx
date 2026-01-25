@@ -62,8 +62,8 @@ export function UsersList() {
         { field: "firstName", headerName: "First Name", width: 150 },
         { field: "lastName", headerName: "Last Name", width: 150 },
         { field: "email", headerName: "Email", width: 200 },
-        { field: "isActive", headerName: "Active", width: 100, type: "boolean" },
-        { field: "role", headerName: "Role", width: 100 },
+        { field: "isActive", headerName: "Active", width: 200, type: "boolean" },
+        { field: "role", headerName: "Role", width: 200 },
         {
             field: "actions",
             type: "actions",
@@ -80,7 +80,10 @@ export function UsersList() {
                     key="delete"
                     icon={<DeleteIcon />}
                     label="Delete"
-                    onClick={() => handleDeleteClick(params.id as number)}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteClick(params.id as number)
+                    }}
                 />
             ],
         },

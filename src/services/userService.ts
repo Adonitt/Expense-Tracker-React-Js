@@ -46,8 +46,10 @@ export const userService = {
                 body: form
             }),
 
-        deleteUserById: (id: number) =>
-            apiClient(`/users/${id}`,
-                {method: 'DELETE'}),
+        deleteUserById: async (userId: number): Promise<void> => {
+            await apiClient(`/users/${userId}`, {
+                method: 'DELETE',
+            });
+        }
     }
 ;

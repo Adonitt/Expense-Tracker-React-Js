@@ -5,8 +5,8 @@ interface RequestOptions extends RequestInit {
 }
 
 export const apiClient = async (path: string, options: RequestOptions = {}) => {
-    const {body, ...rest} = options;
-    const headers: HeadersInit = {'Content-Type': 'application/json'};
+    const { body, ...rest } = options;
+    const headers: HeadersInit = { 'Content-Type': 'application/json' };
     const token = localStorage.getItem('token');
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
@@ -27,6 +27,10 @@ export const apiClient = async (path: string, options: RequestOptions = {}) => {
             errorMessage = text || response.statusText;
         }
         throw new Error(errorMessage);
+    }
+
+    if (response.status === 204 || response.headers.get('content-length') === '0') {
+        return null;
     }
 
     return response.json();

@@ -9,8 +9,6 @@ import SelectContent from './SelectContent.tsx';
 import MenuContent from './MenuContent';
 import OptionsMenu from './OptionsMenu';
 import {getLoggedInUser} from "../../utils/auth.ts";
-import Button from "@mui/material/Button";
-import ColorModeSelect from "../../theme/ColorModeSelect.tsx";
 
 const drawerWidth = 240;
 
