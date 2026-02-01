@@ -22,10 +22,10 @@ interface TransactionDetailsPopUpProps {
     open: boolean;
     onClose: () => void;
     transactionId: number;
-    onDeleted: () => void
+    onDetails: () => void
 }
 
-export function TransactionDetailsPopUp({open, onClose, transactionId, onDeleted}: TransactionDetailsPopUpProps) {
+export function TransactionDetailsPopUp({open, onClose, transactionId, onDetails}: TransactionDetailsPopUpProps) {
     const [transaction, setTransaction] = useState<TransactionDetailsPayload | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -181,7 +181,7 @@ export function TransactionDetailsPopUp({open, onClose, transactionId, onDeleted
                     onSaved={() => {
                         setEditPopUpOpen(false);
                         transactionsService.getTransactionById(transactionId).then(res => setTransaction(res));
-                        onDeleted()
+                        onDetails()
                     }}
                 />
             )}
@@ -194,10 +194,9 @@ export function TransactionDetailsPopUp({open, onClose, transactionId, onDeleted
                         transactionId={transactionId}
                         onDelete={() => {
                             setDeletePopUpOpen(false);
-                            onDeleted();
+                            onDetails();
                         }}
                     />
-
 
                 )
             }

@@ -51,11 +51,18 @@ export const transactionsService = {
         });
     },
 
+    getFilteredTransactions: async (year?: number, month?: number, day?: number) => {
+        let query = `?year=${year}&month=${month}`;
+        if (day) query += `&day=${day}`;
+        return await apiClient(`/transactions/filter${query}`, {method: "GET"});
+    },
+
     getTransactionById: async (id: number): Promise<TransactionDetailsPayload> => {
         return await apiClient<TransactionDetailsPayload>(`/transactions/${id}`, {
             method: 'GET'
         });
     },
+
     createTransaction: async (form: CreateTransactionPayload): Promise<CreateTransactionPayload> => {
         return await apiClient('/transactions/create', {
             method: 'POST',
