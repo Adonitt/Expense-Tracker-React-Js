@@ -10,7 +10,6 @@ export default function Dashboard(props: { disableCustomTheme?: boolean }) {
             <ColorModeSelect sx={{position: 'fixed', top: '1.5rem', right: '3rem'}}/>
             <SideMenu />
             <AppNavbar />
-
             <Box
                 component="main"
                 sx={{
@@ -18,6 +17,7 @@ export default function Dashboard(props: { disableCustomTheme?: boolean }) {
                     backgroundColor: 'background.default',
                     overflow: 'auto',
                     p: 3,
+                    mt:5
                 }}
             >
                 <Outlet />

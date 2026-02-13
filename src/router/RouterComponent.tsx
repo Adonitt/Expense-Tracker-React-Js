@@ -8,6 +8,7 @@ import OAuthSuccess from '../components/login/OAuthSuccess.tsx';
 import {UsersList} from "../components/users/UsersList.tsx";
 import MainGrid from "../components/dashboard/MainGrid.tsx";
 import {TransactionsList} from "../components/transactions/TransactionsList.tsx";
+import {DebtsList} from "../components/debts/DebtsList.tsx";
 
 function RouterComponent() {
 
@@ -32,6 +33,8 @@ function RouterComponent() {
                 <Route index element={<MainGrid/>}/>
                 <Route path="users" element={<UsersList/>}/>
                 <Route path="transactions" element={<TransactionsList/>}/>
+                <Route path="debts" element={<DebtsList/>}/>
+
             </Route>
             <Route path="/oauth-success" element={<OAuthSuccess/>}/>
             <Route path="*" element={<Dashboard/>}/>

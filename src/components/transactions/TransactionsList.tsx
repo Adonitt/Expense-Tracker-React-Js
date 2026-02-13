@@ -185,7 +185,6 @@ export function TransactionsList() {
                 </Button>
             </Stack>
 
-            {/* Filters */}
             <Stack direction="row" spacing={1} sx={{mb: 2, alignItems: "center"}}>
                 <TextField
                     type="number"
