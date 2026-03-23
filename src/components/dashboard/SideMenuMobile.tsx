@@ -66,14 +66,13 @@ export default function SideMenuMobile({open, toggleDrawer}: SideMenuMobileProps
                 </Stack>
                 <Divider/>
                 <Stack sx={{flexGrow: 1}}>
-                    <MenuContent/>
+                    <MenuContent onCloseSidebar={toggleDrawer(false)}/>
                     <Divider/>
-                </Stack>
-                <Stack sx={{p: 2}}>
-                    <Button onClick={logout} variant="outlined" fullWidth startIcon={<LogoutRoundedIcon/>}>
-                        Logout
-                    </Button>
-                </Stack>
+                </Stack> <Stack sx={{p: 2}}>
+                <Button onClick={logout} variant="outlined" fullWidth startIcon={<LogoutRoundedIcon/>}>
+                    Logout
+                </Button>
+            </Stack>
             </Stack>
         </Drawer>
     );

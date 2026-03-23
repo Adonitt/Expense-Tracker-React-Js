@@ -20,7 +20,6 @@ interface UserDetailsProps {
     onClose: () => void;
     userId: number | null;
     onEdit?: (id: number) => void;
-
 }
 
 export function UserDetailsPopUp({open, onClose, userId, onEdit}: UserDetailsProps) {

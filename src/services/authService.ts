@@ -14,7 +14,14 @@ interface RegisterPayload {
     confirmPassword: string
 }
 
+interface ChangePasswordPayload {
+    oldPassword: string,
+    newPassword: string,
+    confirmPassword: string
+}
+
 export const authService = {
     login: (data: LoginPayload) => apiClient('/auth/login', {method: 'POST', body: data}),
     register: (data: RegisterPayload) => apiClient('/auth/register', {method: 'POST', body: data}),
+    changePassword: (data: ChangePasswordPayload) => apiClient('/auth/change-password', {method: 'PUT', body: data}),
 }
