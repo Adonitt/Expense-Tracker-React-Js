@@ -31,6 +31,17 @@ export const ChangePasswordDialog = ({open, onClose}: Props) => {
         const [saving, setSaving] = React.useState(false);
 
         const handleSave = async () => {
+            if (!oldPassword || !newPassword || !confirmPassword) {
+                toast.warning("Please fill in all fields");
+                return;
+            }
+
+            if (newPassword.length < 6) toast.warning(
+                "New password must be at least 6 characters long"
+            )
+            if (confirmPassword.length < 6) toast.warning(
+                "Confirm password must be at least 6 characters long")
+
             if (newPassword !== confirmPassword) {
                 toast.warning("New password and confirm password do not match");
                 return;
@@ -56,11 +67,11 @@ export const ChangePasswordDialog = ({open, onClose}: Props) => {
         };
 
         return (
-            <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+            <Dialog open={open} onClose={onClose}>
                 <DialogTitle>Change Password</DialogTitle>
                 <DialogContent dividers>
                     <Grid container spacing={2} mt={1}>
-                        <Grid item xs={12}>
+                        <Grid size={{xs: 12, sm: 12}}>
                             <Paper sx={{p: 1}}>
                                 <TextField
                                     fullWidth
@@ -83,7 +94,7 @@ export const ChangePasswordDialog = ({open, onClose}: Props) => {
                                 />
                             </Paper>
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={{xs: 12, sm: 12}}>
                             <Paper sx={{p: 1}}>
                                 <TextField
                                     fullWidth
@@ -106,7 +117,7 @@ export const ChangePasswordDialog = ({open, onClose}: Props) => {
                                 />
                             </Paper>
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={{xs: 12, sm: 12}}>
                             <Paper sx={{p: 1}}>
                                 <TextField
                                     fullWidth

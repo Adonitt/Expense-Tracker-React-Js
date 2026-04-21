@@ -34,7 +34,7 @@ export function TransactionDeleteDialog({open, onClose, transactionId, onDelete}
         <Dialog open={open} onClose={onClose}>
             <DialogTitle>Confirm Delete</DialogTitle>
             <DialogContent dividers>
-                <Typography>Are you sure you want to delete user {transactionId}?</Typography>
+                <Typography>Are you sure you want to delete transaction with ID:{transactionId}?</Typography>
             </DialogContent>
             <DialogActions>
                 <Button variant="outlined" onClick={onClose} disabled={loading}>Cancel</Button>

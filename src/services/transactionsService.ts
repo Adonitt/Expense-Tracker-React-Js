@@ -51,10 +51,13 @@ export const transactionsService = {
         });
     },
 
-    getFilteredTransactions: async (year?: number, month?: number, day?: number) => {
-        let query = `?year=${year}&month=${month}`;
-        if (day) query += `&day=${day}`;
-        return await apiClient(`/transactions/filter${query}`, {method: "GET"});
+    getFilteredTransactions: async (fromDate?: string, toDate?: string) => {
+        let query = "";
+
+        if (fromDate && toDate) {
+            query = `?fromDate=${fromDate}&toDate=${toDate}`;
+        }
+        return await apiClient(`/transactions/filter${query}`, { method: "GET" });
     },
 
     getTransactionById: async (id: number): Promise<TransactionDetailsPayload> => {

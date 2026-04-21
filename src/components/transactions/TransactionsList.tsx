@@ -1,16 +1,21 @@
 import {useEffect, useState} from "react";
 import {transactionsService} from "../../services/transactionsService.ts";
-import {DataGrid, GridActionsCellItem, type GridColDef, type GridRowParams} from "@mui/x-data-grid";
+import {DataGrid, GridActionsCellItem, type GridColDef} from "@mui/x-data-grid";
 import PageContainer from "../users/PageContainer.tsx";
-import {Box, Button, MenuItem, Select, Stack, Typography} from "@mui/material";
+import {Box, Button, Stack, Typography} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from "@mui/icons-material/Add";
 import {TransactionEditPopUp} from "./TransactionEditPopUp.tsx";
 import {TransactionCreatePopUp} from "./TransactionCreatePopUp.tsx";
 import {TransactionDeleteDialog} from "./TransactionDeleteDialog.tsx";
 import {TransactionDetailsPopUp} from "./TransactionDetailsPopUp.tsx";
 import TextField from "@mui/material/TextField";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import {BalanceCard} from "../../helpers/BalanceCard.tsx";
+
 
 export function TransactionsList() {
     const [transactions, setTransactions] = useState<any[]>([]);
@@ -28,47 +33,84 @@ export function TransactionsList() {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [deleteTransactionId, setDeleteTransactionId] = useState<number | null>(null);
 
-    const [selectedDay, setSelectedDay] = useState<number | null>(null);
-    const [selectedYear, setSelectedYear] = useState<number | null>(null);
-    const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+    const [fromDate, setFromDate] = useState<string>("");
+    const [toDate, setToDate] = useState<string>("");
+    const [selectedDebtId, setSelectedDebtId] = useState<number | null>(null);
+    const [detailsOpen, setDetailsOpen] = useState(false);
 
-    const fetchTransactions = (year?: number | null, month?: number | null, day?: number | null) => {
+
+    const fetchTransactions = (from?: string, to?: string) => {
+        if (!from || !to) return;
+
         setLoading(true);
         setError(null);
 
-        transactionsService.getFilteredTransactions(year, month, day)
+        transactionsService.getFilteredTransactions(from, to)
             .then(res => setTransactions(res))
             .catch(err => setError(err.message))
             .finally(() => setLoading(false));
     };
 
-    const showToday = () => {
+    const getLast7Days = () => {
         const today = new Date();
-        const year = today.getFullYear();
-        const month = today.getMonth() + 1;
+        const last7 = new Date();
 
-        setSelectedYear(year);
-        setSelectedMonth(month);
+        last7.setDate(today.getDate() - 7);
 
-        fetchTransactions(year, month);
+        return {
+            from: last7.toISOString().split("T")[0],
+            to: today.toISOString().split("T")[0],
+        };
     };
 
     useEffect(() => {
-        showToday();
+        const {from, to} = getLast7Days();
+        setFromDate(from);
+        setToDate(to);
+        fetchTransactions(from, to);
     }, []);
 
     const handleCreate = () => setCreatePopUpOpen(true);
-    const handleRowClick = (id: number) => {
-        setSelectTransactionId(id);
-        setPopUpOpen(true);
+
+    const handleRowClick = (row: any) => {
+        if (row.type === "DEBT") {
+            setSelectedDebtId(row.debtId);
+            setDetailsOpen(true);
+        } else {
+            setSelectTransactionId(row.id);
+            setPopUpOpen(true);
+        }
     };
+
     const handleEdit = (id: number) => {
         setEditTransactionId(id);
         setEditPopUpOpen(true);
     };
+
     const handleDeleteClick = (id: number) => {
         setDeleteTransactionId(id);
         setDeleteDialogOpen(true);
+    };
+
+    const handleApplyFilter = () => {
+        if (!fromDate || !toDate) {
+            alert("Select both dates");
+            return;
+        }
+
+        if (fromDate > toDate) {
+            alert("From date cannot be after To date");
+            return;
+        }
+
+        fetchTransactions(fromDate, toDate);
+    };
+
+    const handleReset = () => {
+        const {from, to} = getLast7Days();
+        setFromDate(from);
+        setToDate(to);
+        fetchTransactions(from, to);
     };
 
     const columns: GridColDef[] = [
@@ -76,20 +118,18 @@ export function TransactionsList() {
         {
             field: "amount",
             headerName: "Amount €",
-            width: 100,
+            width: 120,
             align: "center",
             renderCell: (params) => {
                 const isIncome = params.row.type === "INCOME";
                 return (
-                    <span
-                        style={{
-                            backgroundColor: isIncome ? "green" : "red",
-                            color: "white",
-                            padding: "2px 6px",
-                            borderRadius: "4px",
-                            fontWeight: "bold",
-                        }}
-                    >
+                    <span style={{
+                        backgroundColor: isIncome ? "green" : "red",
+                        color: "white",
+                        padding: "2px 6px",
+                        borderRadius: "4px",
+                        fontWeight: "bold",
+                    }}>
                         {isIncome ? `+${params.value}` : `-${params.value}`}
                     </span>
                 );
@@ -98,73 +138,48 @@ export function TransactionsList() {
         {
             field: "type",
             headerName: "Type",
-            width: 150,
+            width: 120,
             align: "center",
-            renderCell: (params) => {
-                const isIncome = params.row.type === "INCOME";
-                return (
-                    <span
-                        style={{
-                            backgroundColor: isIncome ? "green" : "red",
-                            color: "white",
-                            padding: "2px 6px",
-                            borderRadius: "4px",
-                            fontWeight: "bold",
-                        }}
-                    >
-                        {params.row.type}
-                    </span>
-                );
-            },
         },
         {field: "category", headerName: "Category", width: 150, align: "center"},
-        {field: "date", headerName: "Date", width: 100, align: "center"},
+        {field: "description", headerName: "Description", width: 150, align: "center"},
+        {field: "date", headerName: "Date", width: 120, align: "center"},
         {
+            headerName: "Actions",
             field: "actions",
             type: "actions",
-            headerName: "Actions",
             width: 100,
-            align: "center",
-            getActions: (params) => {
-                if (params.row.category === "DEBT") return [<p key="debt">Link to Debt</p>];
-                return [
-                    <GridActionsCellItem
-                        key="edit"
-                        icon={<EditIcon/>}
-                        label="Edit"
-                        onClick={() => handleEdit(params.id as number)}
-                    />,
-                    <GridActionsCellItem
-                        key="delete"
-                        icon={<DeleteIcon/>}
-                        label="Delete"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteClick(params.id as number);
-                        }}
-                    />,
-                ];
-            },
+            getActions: (params) => [
+                <GridActionsCellItem
+                    key="edit"
+                    icon={<EditIcon/>}
+                    label="Edit"
+                    onClick={() => handleEdit(params.id as number)}
+                />,
+                <GridActionsCellItem
+                    key="delete"
+                    icon={<DeleteIcon/>}
+                    label="Delete"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteClick(params.id as number);
+                    }}
+                />,
+            ],
         },
     ];
+    const isDark = localStorage.theme === "dark";
+    const isLight = localStorage.theme === "light";
 
     const rows = transactions.map(t => ({
         id: t.id,
-        debtId: t.debtId ?? "-",
-        userId: t.userId,
-        userFullName: t.userFullName,
         amount: t.amount,
         type: t.type,
         date: t.date,
         category: t.category,
+        description: t.description,
     }));
 
-    const monthNames = [
-        "",
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
-// Llogarit totalet
     const totalIncome = transactions
         .filter(t => t.type === "INCOME")
         .reduce((sum, t) => sum + t.amount, 0);
@@ -175,144 +190,164 @@ export function TransactionsList() {
 
     const difference = totalIncome - totalExpense;
 
-
     return (
         <PageContainer title="Transactions List">
-            <Stack direction="row" alignItems="center" spacing={1} sx={{mb: 2, justifyContent: "space-between"}}>
+
+            <Stack direction="row" justifyContent="space-between" sx={{mb: 2}}>
                 <Typography variant="h6">Transactions</Typography>
-                <Button variant="contained" onClick={handleCreate} startIcon={<AddIcon/>}>
+                <Button variant="contained" startIcon={<AddIcon/>} onClick={handleCreate}>
                     Create
                 </Button>
             </Stack>
 
-            <Stack direction="row" spacing={1} sx={{mb: 2, alignItems: "center"}}>
+            <Stack
+                direction={{xs: "column", md: "row"}}
+                spacing={2}
+                sx={{
+                    mb: 2,
+                    alignItems: {md: "center"},
+                    flexWrap: "wrap"
+                }}
+            >
                 <TextField
-                    type="number"
+                    type="date"
                     size="small"
-                    label="Day"
-                    InputProps={{inputProps: {min: 1, max: 31}}}
-                    value={selectedDay ?? ""}
-                    onChange={(e) => {
-                        const day = e.target.value ? Number(e.target.value) : null;
-                        setSelectedDay(day);
-                        fetchTransactions(selectedYear, selectedMonth, day);
-                    }}
+                    label="From"
+                    InputLabelProps={{shrink: true}}
+                    value={fromDate}
+                    onChange={(e) => setFromDate(e.target.value)}
+                    sx={{width: {xs: "100%", md: 180}}}
                 />
 
-                <Select
+                <TextField
+                    type="date"
                     size="small"
-                    value={selectedMonth ?? ""}
-                    onChange={(e) => {
-                        const month = Number(e.target.value);
-                        setSelectedMonth(month);
-                        fetchTransactions(selectedYear, month, selectedDay);
-                    }}
-                >
-                    <MenuItem value="" disabled>Select Month</MenuItem>
-                    {Array.from({length: 12}, (_, i) => (
-                        <MenuItem key={i + 1} value={i + 1}>{monthNames[i + 1]}</MenuItem>
-                    ))}
-                </Select>
+                    label="To"
+                    InputLabelProps={{shrink: true}}
+                    value={toDate}
+                    onChange={(e) => setToDate(e.target.value)}
+                    sx={{width: {xs: "100%", md: 180}}}
+                />
 
-                <Select
-                    size="small"
-                    value={selectedYear ?? ""}
-                    onChange={(e) => {
-                        const year = Number(e.target.value);
-                        setSelectedYear(year);
-                        fetchTransactions(year, selectedMonth, selectedDay);
+                <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{
+                        width: {xs: "100%", md: "auto"}
                     }}
                 >
-                    <MenuItem value="" disabled>Select Year</MenuItem>
-                    <MenuItem value={2025}>2025</MenuItem>
-                    <MenuItem value={2026}>2026</MenuItem>
-                </Select>
+                    <Button
+                        variant="contained"
+                        onClick={handleApplyFilter}
+                        sx={{flex: {xs: 1, md: "unset"}}}
+                    >
+                        Apply
+                    </Button>
 
-                <Button
-                    variant="outlined"
-                    onClick={() => {
-                        const today = new Date();
-                        setSelectedYear(today.getFullYear());
-                        setSelectedMonth(today.getMonth() + 1);
-                        setSelectedDay(today.getDate());
-                        fetchTransactions(today.getFullYear(), today.getMonth() + 1, today.getDate());
-                    }}
-                >
-                    Show Today
-                </Button>
-
-                <Button
-                    variant="outlined"
-                    onClick={() => {
-                        const today = new Date();
-                        setSelectedDay(null);
-                        setSelectedMonth(today.getMonth() + 1);
-                        setSelectedYear(today.getFullYear());
-                        fetchTransactions(today.getFullYear(), today.getMonth() + 1);
-                    }}
-                >
-                    Clear Day
-                </Button>
+                    <Button
+                        variant="outlined"
+                        onClick={handleReset}
+                        sx={{flex: {xs: 1, md: "unset"}}}
+                    >
+                        Last 7 Days
+                    </Button>
+                </Stack>
             </Stack>
 
+            <Box
+                sx={{
+                    mb: 2,
+                    p: 2,
+                    borderRadius: 2,
+                    display: "flex",
+                    alignItems: {xs: "flex-start", md: "center"},
+                    flexDirection: {xs: "column", md: "row"},
+                    gap: 1,
 
-            <Box sx={{mb: 2, p: 2, bgcolor: "#e3f2fd", borderRadius: 2}}>
-                <Typography color="black">
-                    {selectedDay
-                        ? `Showing transactions for date: ${selectedDay} ${monthNames[selectedMonth ?? 0]} ${selectedYear}`
-                        : selectedMonth && selectedYear
-                            ? `Showing transactions for this month: ${monthNames[selectedMonth]} ${selectedYear}`
-                            : "Showing transactions for today"}
+                    bgcolor: isDark ? "#1e293b" : "#e3f2fd",
+                    border: isDark ? "1px solid #334155" : "none",
+                }}
+            >
+                <Typography color={isDark ? "#cbd5e1" : "black"}>
+                    Showing transactions
+                </Typography>
+
+                <Typography
+                    fontWeight="bold"
+                    sx={{
+                        color: isDark ? "#60a5fa" : "#1976d2",
+                    }}
+                >
+                    {fromDate} → {toDate}
                 </Typography>
             </Box>
 
-            <Box sx={{width: "100%"}}> {error ? (<Typography color="error">{error}</Typography>) : (
-                <DataGrid rows={rows} columns={columns} loading={loading} pageSizeOptions={[5, 10, 25]} autoHeight
-                          onRowClick={(params: GridRowParams) => handleRowClick(params.id as number)}
-                          localeText={{noRowsLabel: "No transactions found for the selected date/month!"}}/>)} </Box>
-            <Box color='black' sx={{mt: 2, p: 2, bgcolor: "#f0f0f0", borderRadius: 2}}> <Typography variant="body1">Total
-                Income: €{totalIncome}</Typography> <Typography variant="body1">Total Expense:
-                €{totalExpense}</Typography> <Typography variant="body1" fontWeight="bold"> Difference:
-                €{difference} </Typography> </Box>
-            {
-                selectTransactionId && (
-                    <TransactionDetailsPopUp
-                        open={popUpOpen}
-                        onClose={() => setPopUpOpen(false)}
-                        transactionId={selectTransactionId}
-                        onDetails={() => fetchTransactions(selectedYear, selectedMonth, selectedDay)}
-                    />
-                )
-            }
+            <DataGrid
+                rows={rows}
+                columns={columns}
+                loading={loading}
+                autoHeight
 
-            {
-                editTransactionId && (
-                    <TransactionEditPopUp
-                        open={editPopUpOpen}
-                        onClose={() => setEditPopUpOpen(false)}
-                        transactionId={editTransactionId}
-                        onSaved={() => fetchTransactions(selectedYear, selectedMonth, selectedDay)}
-                    />
-                )
-            }
+                pagination
+                pageSizeOptions={[5, 10, 25]}
 
-            {
-                createPopUpOpen && (
-                    <TransactionCreatePopUp
-                        open={createPopUpOpen}
-                        onClose={() => setCreatePopUpOpen(false)}
-                        onCreated={() => fetchTransactions(selectedYear, selectedMonth, selectedDay)}
-                    />
-                )
-            }
+                initialState={{
+                    pagination: {
+                        paginationModel: {
+                            pageSize: 5,
+                            page: 0,
+                        },
+                    },
+                }}
+
+                onRowClick={(params) => handleRowClick(params.row)}
+            />
+
+
+            <BalanceCard income={totalIncome} expense={totalExpense}/>
+
+            {selectTransactionId && (
+                <TransactionDetailsPopUp
+                    open={popUpOpen}
+                    onClose={() => setPopUpOpen(false)}
+                    transactionId={selectTransactionId}
+                    onDetails={() => fetchTransactions(fromDate, toDate)}
+                />
+            )}
+
+            {editTransactionId && (
+                <TransactionEditPopUp
+                    open={editPopUpOpen}
+                    onClose={() => setEditPopUpOpen(false)}
+                    transactionId={editTransactionId}
+                    onSaved={() => fetchTransactions(fromDate, toDate)}
+                />
+            )}
+
+            {createPopUpOpen && (
+                <TransactionCreatePopUp
+                    open={createPopUpOpen}
+                    onClose={() => setCreatePopUpOpen(false)}
+                    onCreated={() => fetchTransactions(fromDate, toDate)}
+                />
+            )}
 
             <TransactionDeleteDialog
                 open={deleteDialogOpen}
                 transactionId={deleteTransactionId}
                 onClose={() => setDeleteDialogOpen(false)}
-                onDelete={() => fetchTransactions(selectedYear, selectedMonth, selectedDay)}
+                onDelete={() => fetchTransactions(fromDate, toDate)}
             />
+
+            {selectedDebtId && (
+                <DebtDetailsPopUp
+                    open={detailsOpen}
+                    debtId={selectedDebtId}
+                    onClose={() => setDetailsOpen(false)}
+                    onDetails={fetchDebts}
+                />
+            )}
+
         </PageContainer>
-    )
-        ;
+    );
 }
