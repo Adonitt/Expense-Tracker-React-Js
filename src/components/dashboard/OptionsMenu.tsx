@@ -13,8 +13,8 @@ import MenuButton from './MenuButton';
 import {useNavigate} from "react-router-dom";
 import {ChangePasswordDialog} from "../profile/ChangePasswordDialog.tsx";
 import {UserDetailsPopUp} from "../users/UserDetailsPopUp.tsx";
-import {UserEditPopUp} from "../users/UserEditPopUp.tsx";
 import {getLoggedInUser} from "../../utils/auth.ts";
+import {ProfileEditPopUp} from "../profile/ProfileEditPopUp.tsx";
 
 const MenuItem = styled(MuiMenuItem)({
     margin: '2px 0',
@@ -60,11 +60,17 @@ export default function OptionsMenu() {
                     [`& .${dividerClasses.root}`]: {margin: '4px -4px'},
                 }}
             >
-                <MenuItem onClick={() => { handleClose(); setOpenProfile(true); }}>
+                <MenuItem onClick={() => {
+                    handleClose();
+                    setOpenProfile(true);
+                }}>
                     My Profile
                 </MenuItem>
 
-                <MenuItem onClick={() => { handleClose(); setOpenChangePassword(true); }}>
+                <MenuItem onClick={() => {
+                    handleClose();
+                    setOpenChangePassword(true);
+                }}>
                     Change Password
                 </MenuItem>
 
@@ -94,10 +100,10 @@ export default function OptionsMenu() {
                 }}
             />
 
-            <UserEditPopUp
+            <ProfileEditPopUp
                 open={editPopUpOpen}
                 onClose={() => setEditPopUpOpen(false)}
-                userId={user.id}
+                user={user}
                 onSaved={() => console.log("User updated")}
             />
         </>

@@ -31,7 +31,9 @@ export function TransactionDeleteDialog({open, onClose, transactionId, onDelete}
     }
 
     return (
-        <Dialog open={open} onClose={onClose}>
+        <Dialog open={open} onClose={onClose}
+                PaperProps={{sx: {borderRadius: 4, backgroundImage: 'none'}}}
+        >
             <DialogTitle>Confirm Delete</DialogTitle>
             <DialogContent dividers>
                 <Typography>Are you sure you want to delete transaction with ID:{transactionId}?</Typography>

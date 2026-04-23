@@ -8,149 +8,190 @@ import {
     Grid,
     IconButton,
     InputAdornment,
-    Paper,
-    TextField
+    TextField,
+    Typography,
+    Box,
+    Stack,
+    Avatar
 } from "@mui/material";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import {authService} from "../../services/authService";
-import {toast} from "react-toastify";
+import {
+    Visibility,
+    VisibilityOff,
+    Lock,
+    VpnKey,
+    Close,
+    Security
+} from "@mui/icons-material";
+import { authService } from "../../services/authService";
+import { toast } from "react-toastify";
 
 interface Props {
     open: boolean;
     onClose: () => void;
 }
 
-export const ChangePasswordDialog = ({open, onClose}: Props) => {
-        const [oldPassword, setOldPassword] = React.useState("");
-        const [newPassword, setNewPassword] = React.useState("");
-        const [confirmPassword, setConfirmPassword] = React.useState("");
-        const [showOld, setShowOld] = React.useState(false);
-        const [showNew, setShowNew] = React.useState(false);
-        const [showConfirm, setShowConfirm] = React.useState(false);
-        const [saving, setSaving] = React.useState(false);
+export const ChangePasswordDialog = ({ open, onClose }: Props) => {
+    const [oldPassword, setOldPassword] = React.useState("");
+    const [newPassword, setNewPassword] = React.useState("");
+    const [confirmPassword, setConfirmPassword] = React.useState("");
+    const [showOld, setShowOld] = React.useState(false);
+    const [showNew, setShowNew] = React.useState(false);
+    const [showConfirm, setShowConfirm] = React.useState(false);
+    const [saving, setSaving] = React.useState(false);
 
-        const handleSave = async () => {
-            if (!oldPassword || !newPassword || !confirmPassword) {
-                toast.warning("Please fill in all fields");
-                return;
-            }
+    const handleSave = async () => {
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            toast.warning("Please fill in all fields");
+            return;
+        }
 
-            if (newPassword.length < 6) toast.warning(
-                "New password must be at least 6 characters long"
-            )
-            if (confirmPassword.length < 6) toast.warning(
-                "Confirm password must be at least 6 characters long")
+        if (newPassword.length < 6) {
+            toast.warning("New password must be at least 6 characters long");
+            return;
+        }
 
-            if (newPassword !== confirmPassword) {
-                toast.warning("New password and confirm password do not match");
-                return;
-            }
-            setSaving(true);
+        if (newPassword !== confirmPassword) {
+            toast.warning("New passwords do not match");
+            return;
+        }
 
-            try {
-                await authService.changePassword({
-                    oldPassword,
-                    newPassword,
-                    confirmPassword,
-                });
-                toast.success("Password changed successfully");
-                setOldPassword("");
-                setNewPassword("");
-                setConfirmPassword("");
-                onClose();
-            } catch (err: any) {
-                toast.error(err.message || "Network error");
-            } finally {
-                setSaving(false);
-            }
-        };
+        setSaving(true);
+        try {
+            await authService.changePassword({
+                oldPassword,
+                newPassword,
+                confirmPassword,
+            });
+            toast.success("Password changed successfully");
+            setOldPassword("");
+            setNewPassword("");
+            setConfirmPassword("");
+            onClose();
+        } catch (err: any) {
+            toast.error(err.message || "Network error");
+        } finally {
+            setSaving(false);
+        }
+    };
 
-        return (
-            <Dialog open={open} onClose={onClose}>
-                <DialogTitle>Change Password</DialogTitle>
-                <DialogContent dividers>
-                    <Grid container spacing={2} mt={1}>
-                        <Grid size={{xs: 12, sm: 12}}>
-                            <Paper sx={{p: 1}}>
-                                <TextField
-                                    fullWidth
-                                    label="Old Password"
-                                    type={showOld ? "text" : "password"}
-                                    value={oldPassword}
-                                    onChange={(e) => setOldPassword(e.target.value)}
-                                    InputProps={{
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    onClick={() => setShowOld(!showOld)}
-                                                    edge="end"
-                                                >
-                                                    {showOld ? <VisibilityOff/> : <Visibility/>}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                            </Paper>
-                        </Grid>
-                        <Grid size={{xs: 12, sm: 12}}>
-                            <Paper sx={{p: 1}}>
-                                <TextField
-                                    fullWidth
-                                    label="New Password"
-                                    type={showNew ? "text" : "password"}
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    InputProps={{
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    onClick={() => setShowNew(!showNew)}
-                                                    edge="end"
-                                                >
-                                                    {showNew ? <VisibilityOff/> : <Visibility/>}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                            </Paper>
-                        </Grid>
-                        <Grid size={{xs: 12, sm: 12}}>
-                            <Paper sx={{p: 1}}>
-                                <TextField
-                                    fullWidth
-                                    label="Confirm Password"
-                                    type={showConfirm ? "text" : "password"}
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    InputProps={{
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    onClick={() => setShowConfirm(!showConfirm)}
-                                                    edge="end"
-                                                >
-                                                    {showConfirm ? <VisibilityOff/> : <Visibility/>}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                            </Paper>
-                        </Grid>
+    return (
+        <Dialog
+            open={open}
+            onClose={onClose}
+            fullWidth
+            maxWidth="xs"
+            PaperProps={{ sx: { borderRadius: 4, backgroundImage: 'none' } }}
+        >
+            <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: 800 }}>
+                Security Settings
+                <IconButton onClick={onClose} size="small">
+                    <Close />
+                </IconButton>
+            </DialogTitle>
+
+            <DialogContent dividers sx={{ borderBottom: 'none' }}>
+                <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 4, mt: 1 }}>
+                    <Avatar sx={{
+                        width: 56,
+                        height: 56,
+                        bgcolor: 'primary.900',
+                        color: 'primary.main',
+                        border: '1px solid'
+                    }}>
+                        <Security fontSize="large" />
+                    </Avatar>
+                    <Box>
+                        <Typography variant="h6" fontWeight="900">
+                            Update Password
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            Ensure your account stays secure
+                        </Typography>
+                    </Box>
+                </Stack>
+
+                <Grid container spacing={2.5}>
+                    <Grid size={{ xs: 12 }}>
+                        <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Current Password</Typography>
+                        <TextField
+                            fullWidth
+                            type={showOld ? "text" : "password"}
+                            placeholder={'Enter your current password'}
+                            value={oldPassword}
+                            onChange={(e) => setOldPassword(e.target.value)}
+                            InputProps={{
+                                startAdornment: <InputAdornment position="start"><VpnKey color="primary" fontSize="small" /></InputAdornment>,
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={() => setShowOld(!showOld)} edge="end">
+                                            {showOld ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                                sx: { borderRadius: 3 }
+                            }}
+                        />
                     </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Button variant="outlined" onClick={onClose} disabled={saving}>
-                        Cancel
-                    </Button>
-                    <Button variant="contained" onClick={handleSave} disabled={saving}>
-                        {saving ? "Saving..." : "Change Password"}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        );
-    }
-;
+
+                    <Grid size={{ xs: 12 }}>
+                        <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>New Password</Typography>
+                        <TextField
+                            fullWidth
+                            type={showNew ? "text" : "password"}
+                            value={newPassword}
+                            placeholder={'Enter your new password'}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            InputProps={{
+                                startAdornment: <InputAdornment position="start"><Lock color="primary" fontSize="small" /></InputAdornment>,
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={() => setShowNew(!showNew)} edge="end">
+                                            {showNew ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                                sx: { borderRadius: 3 }
+                            }}
+                        />
+                    </Grid>
+
+                    <Grid size={{ xs: 12 }}>
+                        <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Confirm New Password</Typography>
+                        <TextField
+                            fullWidth
+                            type={showConfirm ? "text" : "password"}
+                            value={confirmPassword}
+                            placeholder={'Confirm your new password'}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            InputProps={{
+                                startAdornment: <InputAdornment position="start"><Lock color="primary" fontSize="small" /></InputAdornment>,
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={() => setShowConfirm(!showConfirm)} edge="end">
+                                            {showConfirm ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                                sx: { borderRadius: 3 }
+                            }}
+                        />
+                    </Grid>
+                </Grid>
+            </DialogContent>
+
+            <DialogActions sx={{ p: 3, pt: 1 }}>
+                <Button onClick={onClose} color="inherit" sx={{ borderRadius: 2, px: 3 }}>
+                    Cancel
+                </Button>
+                <Button
+                    variant="contained"
+                    onClick={handleSave}
+                    disabled={saving}
+                    sx={{ borderRadius: 2, px: 4, fontWeight: "bold", boxShadow: 3 }}
+                >
+                    {saving ? "Updating..." : "Update Password"}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+};

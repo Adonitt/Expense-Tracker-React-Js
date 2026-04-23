@@ -7,12 +7,27 @@ import {
     DialogContent,
     DialogTitle,
     Grid,
-    Paper,
+    IconButton,
+    InputAdornment,
     TextField,
-    Typography
+    Typography,
+    Avatar,
+    Stack,
+    Box,
+    MenuItem
 } from "@mui/material";
-import {type UpdateUserPayload, type UserDetailsPayload, userService} from "../../services/userService";
-import {toast} from "react-toastify";
+import {
+    Close,
+    Person,
+    Email,
+    Phone,
+    Badge,
+    AdminPanelSettings,
+    ToggleOn,
+    Edit
+} from "@mui/icons-material";
+import { type UpdateUserPayload, type UserDetailsPayload, userService } from "../../services/userService";
+import { toast } from "react-toastify";
 
 interface Props {
     open: boolean;
@@ -21,7 +36,7 @@ interface Props {
     onSaved?: () => void;
 }
 
-export const UserEditPopUp = ({open, onClose, userId, onSaved}: Props) => {
+export const UserEditPopUp = ({ open, onClose, userId, onSaved }: Props) => {
     const [user, setUser] = React.useState<UserDetailsPayload | null>(null);
     const [form, setForm] = React.useState<Partial<UpdateUserPayload>>({});
     const [loading, setLoading] = React.useState(false);
@@ -32,7 +47,7 @@ export const UserEditPopUp = ({open, onClose, userId, onSaved}: Props) => {
         if (!open || !userId) return;
         setLoading(true);
         setError(null);
-        toast.warning('Updating user with ID: ' + userId + ' ...')
+
         userService.getUserById(userId)
             .then(res => {
                 setUser(res);
@@ -46,28 +61,27 @@ export const UserEditPopUp = ({open, onClose, userId, onSaved}: Props) => {
                 });
             })
             .catch(err => {
-                    setError(err.message);
-                    toast.error('Failed to update user with ID: ' + userId + ' ...')
-                }
-            )
+                setError(err.message);
+                toast.error('Failed to load user data');
+            })
             .finally(() => setLoading(false));
     }, [open, userId]);
 
     const handleChange = (field: keyof UpdateUserPayload, value: any) => {
-        setForm(prev => ({...prev, [field]: value}));
+        setForm(prev => ({ ...prev, [field]: value }));
     };
 
     const handleSave = async () => {
         if (!userId) return;
         setSaving(true);
-        setError(null);
         try {
             await userService.updateUserById(userId, form);
+            toast.success(`User updated successfully`);
             onSaved?.();
             onClose();
-            toast.success(`User with ID ${userId} updated successfully `);
         } catch (err: any) {
             setError(err.message || "Failed to update user");
+            toast.error(err.message || "Update failed");
         } finally {
             setSaving(false);
         }
@@ -79,88 +93,146 @@ export const UserEditPopUp = ({open, onClose, userId, onSaved}: Props) => {
             onClose={onClose}
             fullWidth
             maxWidth="sm"
-            PaperProps={{
-                sx: {
-                    backgroundColor: 'background.default',
-                    color: 'text.primary',
-                }
-            }}
-            BackdropProps={{
-                sx: {
-                    backgroundColor: 'rgba(0,0,0,0.9)',
-                }
-            }}
+            PaperProps={{ sx: { borderRadius: 4, backgroundImage: 'none' } }}
         >
-            <DialogTitle>Edit User Id: {userId}</DialogTitle>
-            <DialogContent dividers>
-                {loading && <CircularProgress sx={{display: 'block', mx: 'auto', my: 3}}/>}
-                {error && <Typography color="error">{error}</Typography>}
-                {user && (
-                    <Grid container spacing={2}>
-                        <Grid size={{xs: 12, sm: 6}}>
-                            <Paper sx={{p: 2}}>
-                                <Typography variant="overline">First Name</Typography>
-                                <TextField fullWidth value={form.firstName || "-"}
-                                           onChange={e => handleChange("firstName", e.target.value)}/>
-                            </Paper>
-                        </Grid>
-                        <Grid size={{xs: 12, sm: 6}}>
-                            <Paper sx={{p: 2}}>
-                                <Typography variant="overline">Last Name</Typography>
-                                <TextField fullWidth value={form.lastName || "-"}
-                                           onChange={e => handleChange("lastName", e.target.value)}/>
-                            </Paper>
-                        </Grid>
+            <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: 800 }}>
+                Edit User
+                <IconButton onClick={onClose} size="small">
+                    <Close />
+                </IconButton>
+            </DialogTitle>
 
-                        <Grid size={{xs: 12, sm: 6}}>
-                            <Paper sx={{p: 2}}>
-                                <Typography variant="overline">Email</Typography>
-                                <TextField fullWidth value={form.email || "-"}
-                                           onChange={e => handleChange("email", e.target.value)}/>
-                            </Paper>
-                        </Grid>
-                        <Grid size={{xs: 12, sm: 6}}>
-                            <Paper sx={{p: 2}}>
-                                <Typography variant="overline">Phone</Typography>
-                                <TextField fullWidth value={form.phoneNumber || "-"}
-                                           onChange={e => handleChange("phoneNumber", e.target.value)}/>
-                            </Paper>
-                        </Grid>
+            <DialogContent dividers sx={{ borderBottom: 'none' }}>
+                {loading ? (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 5 }}>
+                        <CircularProgress size={40} />
+                        <Typography sx={{ mt: 2 }} color="text.secondary">Loading user info...</Typography>
+                    </Box>
+                ) : (
+                    <>
+                        {user && (
+                            <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 4, mt: 1 }}>
+                                <Avatar sx={{
+                                    width: 56, height: 56,
+                                    bgcolor: 'primary.900', color: 'primary.main',
+                                    border: '1px solid'
+                                }}>
+                                    <Edit />
+                                </Avatar>
+                                <Box>
+                                    <Typography variant="h6" fontWeight="900">
+                                        ID: #{userId}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Modify account credentials and permissions
+                                    </Typography>
+                                </Box>
+                            </Stack>
+                        )}
 
-                        <Grid size={{xs: 12, sm: 6}}>
-                            <Paper sx={{p: 2}}>
-                                <Typography variant="overline">Role</Typography>
+                        <Grid container spacing={2.5}>
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>First Name</Typography>
+                                <TextField
+                                    fullWidth
+                                    value={form.firstName || ""}
+                                    onChange={e => handleChange("firstName", e.target.value)}
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start"><Person color="primary" fontSize="small" /></InputAdornment>,
+                                        sx: { borderRadius: 3 }
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Last Name</Typography>
+                                <TextField
+                                    fullWidth
+                                    value={form.lastName || ""}
+                                    onChange={e => handleChange("lastName", e.target.value)}
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start"><Badge color="primary" fontSize="small" /></InputAdornment>,
+                                        sx: { borderRadius: 3 }
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Email Address</Typography>
+                                <TextField
+                                    fullWidth
+                                    value={form.email || ""}
+                                    onChange={e => handleChange("email", e.target.value)}
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start"><Email color="primary" fontSize="small" /></InputAdornment>,
+                                        sx: { borderRadius: 3 }
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Phone Number</Typography>
+                                <TextField
+                                    fullWidth
+                                    value={form.phoneNumber || ""}
+                                    onChange={e => handleChange("phoneNumber", e.target.value)}
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start"><Phone color="primary" fontSize="small" /></InputAdornment>,
+                                        sx: { borderRadius: 3 }
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Role</Typography>
                                 <TextField
                                     select
                                     fullWidth
-                                    value={form.role || "User"}
+                                    value={form.role || "USER"}
                                     onChange={e => handleChange("role", e.target.value)}
-                                    SelectProps={{native: true}}
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start"><AdminPanelSettings color="primary" fontSize="small" /></InputAdornment>,
+                                        sx: { borderRadius: 3 }
+                                    }}
                                 >
-                                    <option value="USER">User</option>
-                                    <option value="ADMIN">Admin</option>
+                                    <MenuItem value="USER">User</MenuItem>
+                                    <MenuItem value="ADMIN">Admin</MenuItem>
                                 </TextField>
-                            </Paper>
-                        </Grid>
+                            </Grid>
 
-                        <Grid size={{xs: 12, sm: 6}}>
-                            <Paper sx={{p: 2}}>
-                                <Typography variant="overline">Active</Typography>
-                                <TextField select fullWidth SelectProps={{native: true}}
-                                           value={form.isActive ? "true" : "false"}
-                                           onChange={e => handleChange("isActive", e.target.value === "true")}>
-                                    <option value="true">Yes</option>
-                                    <option value="false">No</option>
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Account Status</Typography>
+                                <TextField
+                                    select
+                                    fullWidth
+                                    value={form.isActive ? "true" : "false"}
+                                    onChange={e => handleChange("isActive", e.target.value === "true")}
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start"><ToggleOn color="primary" fontSize="small" /></InputAdornment>,
+                                        sx: { borderRadius: 3 }
+                                    }}
+                                >
+                                    <MenuItem value="true">Active</MenuItem>
+                                    <MenuItem value="false">Inactive</MenuItem>
                                 </TextField>
-                            </Paper>
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    </>
                 )}
             </DialogContent>
-            <DialogActions>
-                <Button variant="outlined" onClick={onClose} disabled={saving}>Cancel</Button>
-                <Button variant="contained" onClick={handleSave}
-                        disabled={saving}>{saving ? "Saving..." : "Save Changes"}</Button>
+
+            <DialogActions sx={{ p: 3, pt: 1 }}>
+                <Button onClick={onClose} color="inherit" sx={{ borderRadius: 2, px: 3 }}>
+                    Cancel
+                </Button>
+                <Button
+                    variant="contained"
+                    onClick={handleSave}
+                    disabled={saving || loading}
+                    sx={{ borderRadius: 2, px: 4, fontWeight: "bold", boxShadow: 3 }}
+                >
+                    {saving ? "Saving..." : "Save Changes"}
+                </Button>
             </DialogActions>
         </Dialog>
     );

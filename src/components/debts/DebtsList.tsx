@@ -355,7 +355,7 @@ export function DebtsList() {
                         sm: "repeat(2, 1fr)",
                         md: "repeat(3, 1fr)"
                     },
-                    gap: 4
+                    gap: 3
                 }}
             >
                 {paginatedDebts.map(debt => (

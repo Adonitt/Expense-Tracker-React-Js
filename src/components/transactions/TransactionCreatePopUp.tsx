@@ -1,14 +1,26 @@
-import {useState} from "react";
-import {type CreateTransactionPayload, transactionsService} from "../../services/transactionsService.ts";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import Typography from "@mui/material/Typography";
+import { useState } from "react";
+import { type CreateTransactionPayload, transactionsService } from "../../services/transactionsService.ts";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    Typography,
+    TextField,
+    Button,
+    Paper,
+    DialogActions,
+    Stack,
+    Box,
+    InputAdornment,
+    MenuItem
+} from "@mui/material";
+import { toast } from "react-toastify";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import CategoryIcon from "@mui/icons-material/Category";
+import DescriptionIcon from "@mui/icons-material/Description";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
-import {Button, Paper} from "@mui/material";
-import DialogActions from "@mui/material/DialogActions";
-import {toast} from "react-toastify";
 
 interface TransactionCreatePopUpProps {
     open: boolean,
@@ -16,13 +28,13 @@ interface TransactionCreatePopUpProps {
     onCreated: () => void
 }
 
-export function TransactionCreatePopUp({open, onClose, onCreated}: TransactionCreatePopUpProps) {
+export function TransactionCreatePopUp({ open, onClose, onCreated }: TransactionCreatePopUpProps) {
     const [form, setForm] = useState<CreateTransactionPayload>({
         category: 'SALARY',
         amount: 0,
         type: 'INCOME',
         description: '',
-        date: ''
+        date: new Date().toISOString().split('T')[0]
     })
 
     const incomeCategories = ["SALARY", "FREELANCE", "BUSINESS", "INVESTMENT", "GIFTS", "SAVINGS", "OTHER"];
@@ -42,16 +54,16 @@ export function TransactionCreatePopUp({open, onClose, onCreated}: TransactionCr
     const handleSave = async () => {
         const validationError = validate()
         if (validationError) {
-            toast.warning("Please fill all required fields and make sure the amount is greater than 0.")
+            toast.warning(validationError)
             return
         }
         try {
             setSaving(true)
             await transactionsService.createTransaction(form)
-            if (onCreated) onCreated()
+            onCreated()
             onClose()
             toast.success("Transaction created successfully!")
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message || "Failed to create transaction")
         } finally {
             setSaving(false)
@@ -59,105 +71,149 @@ export function TransactionCreatePopUp({open, onClose, onCreated}: TransactionCr
     }
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-            <DialogTitle>Create Transaction</DialogTitle>
+        <Dialog
+            open={open}
+            onClose={onClose}
+            fullWidth
+            maxWidth="sm"
+            PaperProps={{
+                sx: {
+                    borderRadius: 4,
+                    backgroundImage: 'none'
+                }
+            }}
+        >
+            <DialogTitle sx={{ fontWeight: 800 }}>Create New Transaction</DialogTitle>
 
-            <DialogContent dividers>
-                {error && <Typography color="error">{error}</Typography>}
+            <DialogContent dividers sx={{ borderBottom: 'none' }}>
+                {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
 
-                <Grid container spacing={2}>
-
-                    <Grid size={{xs: 12, sm: 6}}>
-                        <Paper sx={{p: 2}}>
-                            <Typography variant="overline">Amount</Typography>
-                            <TextField
-                                fullWidth
-                                type="number"
-                                value={form.amount}
-                                onChange={(e) =>
-                                    setForm({...form, amount: Number(e.target.value)})
-                                }
-                            />
-                        </Paper>
+                <Grid container spacing={3} sx={{ mt: 0.5 }}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                        <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Amount (€)</Typography>
+                        <TextField
+                            fullWidth
+                            type="number"
+                            variant="outlined"
+                            value={form.amount}
+                            onChange={(e) => setForm({ ...form, amount: Number(e.target.value) })}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <AttachMoneyIcon color="primary" />
+                                    </InputAdornment>
+                                ),
+                                sx: { borderRadius: 3 }
+                            }}
+                        />
                     </Grid>
 
-                    <Grid size={{xs: 12, sm: 6}}>
-                        <Paper sx={{p: 2}}>
-                            <Typography variant="overline">Type</Typography>
-                            <TextField
-                                select
-                                fullWidth
-                                value={form.type}
-                                onChange={(e) =>
-                                    setForm({...form, type: e.target.value as any})
-                                }
-                                SelectProps={{native: true}}
-                            >
-                                <option value="INCOME">Income</option>
-                                <option value="EXPENSE">Expense</option>
-                            </TextField>
-                        </Paper>
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                        <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Type</Typography>
+                        <TextField
+                            select
+                            fullWidth
+                            value={form.type}
+                            onChange={(e) => {
+                                const newType = e.target.value as 'INCOME' | 'EXPENSE';
+                                setForm({
+                                    ...form,
+                                    type: newType,
+                                    category: newType === 'INCOME' ? 'SALARY' : 'RENT'
+                                });
+                            }}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <CompareArrowsIcon color="primary" />
+                                    </InputAdornment>
+                                ),
+                                sx: { borderRadius: 3 }
+                            }}
+                        >
+                            <MenuItem value="INCOME">Income</MenuItem>
+                            <MenuItem value="EXPENSE">Expense</MenuItem>
+                        </TextField>
                     </Grid>
 
-                    <Grid size={{xs: 12, sm: 6}}>
-                        <Paper sx={{p: 2}}>
-                            <Typography variant="overline">Category</Typography>
-                            <TextField
-                                select
-                                fullWidth
-                                value={form.category}
-                                onChange={(e) =>
-                                    setForm({...form, category: e.target.value})
-                                }
-                                SelectProps={{native: true}}
-                            >
-                                {(form.type === "INCOME"
-                                        ? incomeCategories
-                                        : expenseCategories
-                                ).map(cat => (
-                                    <option key={cat} value={cat}>{cat}</option>
-                                ))}
-                            </TextField>
-                        </Paper>
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                        <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Category</Typography>
+                        <TextField
+                            select
+                            fullWidth
+                            value={form.category}
+                            onChange={(e) => setForm({ ...form, category: e.target.value })}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <CategoryIcon color="primary" />
+                                    </InputAdornment>
+                                ),
+                                sx: { borderRadius: 3 }
+                            }}
+                        >
+                            {(form.type === "INCOME" ? incomeCategories : expenseCategories).map(cat => (
+                                <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+                            ))}
+                        </TextField>
                     </Grid>
 
-                    <Grid size={{xs: 12, sm: 6}}>
-                        <Paper sx={{p: 2}}>
-                            <Typography variant="overline">Description</Typography>
-                            <TextField
-                                fullWidth
-                                value={form.description}
-                                onChange={(e) =>
-                                    setForm({...form, description: e.target.value})
-                                }
-                            />
-                        </Paper>
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                        <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Date</Typography>
+                        <TextField
+                            fullWidth
+                            type="date"
+                            value={form.date}
+                            onChange={(e) => setForm({ ...form, date: e.target.value })}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <CalendarTodayIcon color="primary" />
+                                    </InputAdornment>
+                                ),
+                                sx: { borderRadius: 3 }
+                            }}
+                        />
                     </Grid>
 
-                    <Grid size={{xs: 12, sm: 6}}>
-                        <Paper sx={{p: 2}}>
-                            <Typography variant="overline">Date</Typography>
-                            <TextField
-                                fullWidth
-                                type="date"
-                                value={form.date}
-                                onChange={(e) =>
-                                    setForm({...form, date: e.target.value})
-                                }
-                            />
-                        </Paper>
+                    <Grid size={{ xs: 12 }}>
+                        <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Description</Typography>
+                        <TextField
+                            fullWidth
+                            multiline
+                            placeholder="Add a note..."
+                            value={form.description}
+                            onChange={(e) => setForm({ ...form, description: e.target.value })}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start" sx={{ alignSelf: 'flex-start' }}>
+                                        <DescriptionIcon color="primary" />
+                                    </InputAdornment>
+                                ),
+                                sx: { borderRadius: 4 }
+                            }}
+                        />
                     </Grid>
-
                 </Grid>
             </DialogContent>
 
-            <DialogActions>
-                <Button onClick={onClose} disabled={saving}>Cancel</Button>
-                <Button variant="contained" onClick={handleSave} disabled={saving}>
+            <DialogActions sx={{ p: 3 }}>
+                <Button
+                    onClick={onClose}
+                    disabled={saving}
+                    sx={{ borderRadius: 2, px: 3 }}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    variant="contained"
+                    onClick={handleSave}
+                    disabled={saving}
+                    sx={{ borderRadius: 2, px: 4, fontWeight: 'bold' }}
+                >
                     {saving ? "Saving..." : "Create"}
                 </Button>
             </DialogActions>
         </Dialog>
-
     )
 }

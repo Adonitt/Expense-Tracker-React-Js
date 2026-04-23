@@ -1,20 +1,33 @@
-import * as React from "react";
 import {useEffect, useState} from "react";
 import {
-    Button,
-    CircularProgress,
     Dialog,
-    DialogActions,
-    DialogContent,
     DialogTitle,
-    Grid,
-    Paper,
+    DialogContent,
+    DialogActions,
     TextField,
-    Typography
+    Button,
+    MenuItem,
+    InputAdornment,
+    IconButton,
+    Typography,
+    Grid,
+    Avatar,
+    Stack,
+    Box,
+    CircularProgress
 } from "@mui/material";
-import type {TransactionDetailsPayload} from "../../services/transactionsService.ts";
-import {transactionsService} from "../../services/transactionsService.ts";
+import {
+    AttachMoney,
+    Event,
+    Description,
+    Category,
+    Close,
+    CompareArrows,
+    TrendingUp,
+    TrendingDown
+} from "@mui/icons-material";
 import {toast} from "react-toastify";
+import {transactionsService, type TransactionDetailsPayload} from "../../services/transactionsService.ts";
 
 interface TransactionEditPopUpProps {
     open: boolean;
@@ -24,28 +37,27 @@ interface TransactionEditPopUpProps {
 }
 
 export function TransactionEditPopUp({open, onClose, transactionId, onSaved}: TransactionEditPopUpProps) {
-    const [transaction, setTransaction] = useState<TransactionDetailsPayload | null>(null);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const [amount, setAmount] = useState<number>(0);
-    const [type, setType] = useState<string>("");
+    const [type, setType] = useState<string>("INCOME");
     const [category, setCategory] = useState<string>("");
     const [description, setDescription] = useState<string>("");
     const [date, setDate] = useState<string>("");
+
+    const incomeCategories = ["SALARY", "FREELANCE", "BUSINESS", "INVESTMENT", "GIFTS", "SAVINGS", "OTHER"];
+    const expenseCategories = ["RENT", "GROCERIES", "UTILITIES", "SUBSCRIPTIONS", "TRANSPORT", "HEALTHCARE", "ENTERTAINMENT", "EDUCATION", "TAXES", "INSURANCE", "SHOPPING", "TRAVEL", "OTHER"];
 
     useEffect(() => {
         if (!transactionId || !open) return;
 
         setLoading(true);
-        setTransaction(null);
         setError(null);
-        toast.warning('Updating transaction with ID: ' + transactionId + ' ...')
 
         transactionsService.getTransactionById(transactionId)
             .then(res => {
-                setTransaction(res);
                 setAmount(res.amount);
                 setType(res.type);
                 setCategory(res.category);
@@ -57,52 +69,26 @@ export function TransactionEditPopUp({open, onClose, transactionId, onSaved}: Tr
     }, [transactionId, open]);
 
     const handleSave = async () => {
-        if (!transaction) return;
-
-        // ✅ Simple validation
-        if (amount <= 0) {
-            toast.error("Amount must be greater than 0");
-            return;
-        }
-        if (!type) {
-            toast.error("Type is required");
-            return;
-        }
-        if (!category) {
-            toast.error("Category is required");
-            return;
-        }
-        if (!description.trim()) {
-            toast.error("Description is required");
-            return;
-        }
-        if (!date) {
-            toast.error("Date is required");
+        if (amount <= 0 || !type || !category || !date) {
+            toast.warning("Please fill all required fields correctly.");
             return;
         }
 
         setSaving(true);
-        setError(null);
-
         try {
             await transactionsService.updateTransactionById(
                 {category, amount, type, description, date},
                 transactionId
             );
-            toast.success(`Transaction with ID: ${transactionId} updated successfully!`);
-
+            toast.success("Transaction updated successfully!");
             if (onSaved) onSaved();
             onClose();
         } catch (err: any) {
-            toast.error(err.message || `Failed to update transaction with ID: ${transactionId}`);
+            toast.error(err.message || "Failed to update transaction");
         } finally {
             setSaving(false);
         }
     };
-
-    const incomeCategories = ["SALARY", "FREELANCE", "BUSINESS", "INVESTMENT", "GIFTS", "SAVINGS", "OTHER"];
-    const expenseCategories = ["RENT", "GROCERIES", "UTILITIES", "SUBSCRIPTIONS", "TRANSPORT", "HEALTHCARE", "ENTERTAINMENT", "EDUCATION", "TAXES", "INSURANCE", "SHOPPING", "TRAVEL", "OTHER"];
-
 
     return (
         <Dialog
@@ -110,110 +96,179 @@ export function TransactionEditPopUp({open, onClose, transactionId, onSaved}: Tr
             onClose={onClose}
             fullWidth
             maxWidth="sm"
-            PaperProps={{
-                sx: {
-                    backgroundColor: 'background.default',
-                    color: 'text.primary',
-                }
-            }}
-            BackdropProps={{
-                sx: {backgroundColor: 'rgba(0,0,0,0.9)'}
-            }}
+            PaperProps={{sx: {borderRadius: 4, backgroundImage: 'none'}}}
         >
-            <DialogTitle>Edit Transaction - ID: {transactionId}</DialogTitle>
-            <DialogContent dividers>
-                {loading && <CircularProgress sx={{display: 'block', mx: 'auto', my: 3}}/>}
-                {error && <Typography color="error">{error}</Typography>}
+            <DialogTitle sx={{display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: 800}}>
+                Edit Transaction
+                <IconButton onClick={onClose} size="small">
+                    <Close/>
+                </IconButton>
+            </DialogTitle>
 
-                {transaction && (
-                    <Grid container spacing={2}>
-                        <Grid size={{xs: 12, sm: 6}}>
-                            <Paper sx={{p: 2}}>
-                                <Typography variant="overline">Amount</Typography>
+            <DialogContent dividers sx={{borderBottom: 'none'}}>
+                {loading ? (
+                    <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', my: 5}}>
+                        <CircularProgress size={40}/>
+                        <Typography sx={{mt: 2}} color="text.secondary">Loading data...</Typography>
+                    </Box>
+                ) : (
+                    <>
+                        <Stack direction="row" alignItems="center" spacing={2} sx={{mb: 4, mt: 1}}>
+                            <Avatar sx={{
+                                width: 56,
+                                height: 56,
+                                bgcolor: type === "INCOME" ? 'success.900' : 'error.900',
+                                color: type === "INCOME" ? '#4caf50' : '#f44336',
+                                border: '1px solid'
+                            }}>
+                                {type === "INCOME" ? <TrendingUp fontSize="large"/> : <TrendingDown fontSize="large"/>}
+                            </Avatar>
+                            <Box>
+                                <Typography variant="h5" fontWeight="900"
+                                            color={type === "INCOME" ? "success.main" : "error.main"}>
+                                    ID: #{transactionId}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Modify the transaction details below
+                                </Typography>
+                            </Box>
+                        </Stack>
+
+                        <Grid container spacing={2}>
+                            <Grid size={{xs: 12, sm: 6}}>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ml: 1}}>Amount
+                                    (€)</Typography>
                                 <TextField
                                     fullWidth
                                     type="number"
                                     value={amount}
                                     onChange={(e) => setAmount(Number(e.target.value))}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <AttachMoney color="primary"/>
+                                            </InputAdornment>
+                                        ),
+                                        sx: {borderRadius: 3}
+                                    }}
                                 />
-                            </Paper>
-                        </Grid>
+                            </Grid>
 
-
-                        <Grid size={{xs: 12, sm: 6}}>
-                            <Paper sx={{p: 2, borderRadius: 2}}>
-                                <Typography variant="overline" sx={{mb: 1, display: 'block'}}>Type</Typography>
+                            <Grid size={{xs: 12, sm: 6}}>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary"
+                                            sx={{ml: 1}}>Type</Typography>
                                 <TextField
                                     select
                                     fullWidth
                                     value={type}
-                                    onChange={(e) => setType(e.target.value)}
-                                    SelectProps={{native: true}}
-                                    variant="outlined"
-                                    sx={{
-                                        backgroundColor: 'background.default',
-                                        '& select': {padding: '10px', fontSize: '0.95rem'},
-                                        '& fieldset': {borderColor: '#ccc'},
-                                        '&:hover fieldset': {borderColor: '#999'},
+                                    onChange={(e) => {
+                                        const newType = e.target.value;
+                                        setType(newType);
+                                        setCategory(newType === 'INCOME' ? 'SALARY' : 'RENT');
+                                    }}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <CompareArrows color="primary"/>
+                                            </InputAdornment>
+                                        ),
+                                        sx: {borderRadius: 3}
                                     }}
                                 >
-                                    <option value="INCOME">Income</option>
-                                    <option value="EXPENSE">Expense</option>
+                                    <MenuItem value="INCOME">Income</MenuItem>
+                                    <MenuItem value="EXPENSE">Expense</MenuItem>
                                 </TextField>
-                            </Paper>
-                        </Grid>
+                            </Grid>
 
-                        <Grid size={{xs: 12, sm: 6}}>
-                            <Paper sx={{p: 2, borderRadius: 2}}>
-                                <Typography variant="overline" sx={{mb: 1, display: 'block'}}>Category</Typography>
+                            <Grid size={{xs: 12, sm: 6}}>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary"
+                                            sx={{ml: 1}}>Category</Typography>
                                 <TextField
                                     select
                                     fullWidth
                                     value={category}
                                     onChange={(e) => setCategory(e.target.value)}
-                                    SelectProps={{native: true}}
-                                    variant="outlined"
-                                    sx={{backgroundColor: 'background.default'}}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <Category color="primary"/>
+                                            </InputAdornment>
+                                        ),
+                                        sx: {borderRadius: 3}
+                                    }}
                                 >
                                     {(type === "INCOME" ? incomeCategories : expenseCategories).map(cat => (
-                                        <option key={cat} value={cat}>{cat}</option>
+                                        <MenuItem key={cat} value={cat}>{cat}</MenuItem>
                                     ))}
                                 </TextField>
-                            </Paper>
-                        </Grid>
+                            </Grid>
 
-
-                        <Grid size={{xs: 12, sm: 6}}>
-                            <Paper sx={{p: 2}}>
-                                <Typography variant="overline">Description</Typography>
-                                <TextField
-                                    fullWidth
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                />
-                            </Paper>
-                        </Grid>
-
-                        <Grid size={{xs: 12, sm: 6}}>
-                            <Paper sx={{p: 2}}>
-                                <Typography variant="overline">Date</Typography>
+                            <Grid size={{xs: 12, sm: 6}}>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary"
+                                            sx={{ml: 1}}>Date</Typography>
                                 <TextField
                                     fullWidth
                                     type="date"
                                     value={date}
                                     onChange={(e) => setDate(e.target.value)}
-                                    InputLabelProps={{shrink: true}}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <Event color="primary"/>
+                                            </InputAdornment>
+                                        ),
+                                        sx: {borderRadius: 3}
+                                    }}
                                 />
-                            </Paper>
-                        </Grid>
+                            </Grid>
 
-                    </Grid>
+                            <Grid size={{ xs: 12 }}>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Description</Typography>
+                                <Box sx={{
+                                    p: 2,
+                                    borderRadius: 3,
+                                    bgcolor: 'action.hover',
+                                    border: '1px solid',
+                                    borderColor: 'divider'
+                                }}>
+
+                                    <TextField
+                                        fullWidth
+                                        multiline
+                                        rows={2}
+                                        variant="standard"
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                        InputProps={{
+                                            disableUnderline: true,
+                                            startAdornment: (
+                                                <InputAdornment position="start"
+                                                                sx={{alignSelf: 'flex-start', mt: 0.5}}>
+                                                    <Description color="primary"/>
+                                                </InputAdornment>
+                                            ),
+                                            sx: {fontSize: '0.95rem'}
+                                        }}
+                                    />
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </>
                 )}
             </DialogContent>
-            <DialogActions>
-                <Button variant="outlined" onClick={onClose} disabled={saving}>Cancel</Button>
-                <Button variant="contained" onClick={handleSave}
-                        disabled={saving}>{saving ? "Saving..." : "Save Changes"}</Button>
+
+            <DialogActions sx={{p: 3, pt: 1}}>
+                <Button onClick={onClose} color="inherit" sx={{borderRadius: 2, px: 3}}>
+                    Cancel
+                </Button>
+                <Button
+                    variant="contained"
+                    onClick={handleSave}
+                    disabled={saving || loading}
+                    sx={{borderRadius: 2, px: 4, fontWeight: "bold", boxShadow: 3}}
+                >
+                    {saving ? "Saving..." : "Save Changes"}
+                </Button>
             </DialogActions>
         </Dialog>
     );
