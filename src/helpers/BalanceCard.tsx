@@ -42,7 +42,6 @@ export function BalanceCard({income, expense}: Props) {
                 </Box>
             </Box>
 
-            {/* EXPENSE */}
             <Box
                 sx={{
                     p: 2,

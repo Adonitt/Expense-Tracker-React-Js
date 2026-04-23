@@ -47,3 +47,4 @@ export function DebtDeleteDialog({ open, onClose, debtId, onDelete }: DebtDelete
         </Dialog>
     );
 }
+

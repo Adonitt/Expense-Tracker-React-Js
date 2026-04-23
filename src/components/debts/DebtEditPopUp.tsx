@@ -1,157 +1,274 @@
 import { useEffect, useState } from "react";
 import {
-    Button,
-    CircularProgress,
     Dialog,
-    DialogActions,
-    DialogContent,
     DialogTitle,
+    DialogContent,
+    DialogActions,
     Grid,
-    Paper,
     TextField,
-    Typography
+    Button,
+    MenuItem,
+    InputAdornment,
+    IconButton,
+    Box,
+    Typography,
+    CircularProgress
 } from "@mui/material";
-import { debtsService } from "../../services/debtsService.ts";
+
+import {
+    AccountCircle,
+    AttachMoney,
+    Event,
+    Description,
+    Category,
+    Close
+} from "@mui/icons-material";
+
+import { debtsService } from "../../services/debtsService";
 import { toast } from "react-toastify";
-import type { DebtDetailsPayload } from "../../services/debtsService.ts";
 
 interface DebtEditPopUpProps {
     open: boolean;
     onClose: () => void;
     debtId: number;
-    onSaved?: () => void;
+    onSaved: () => void;
 }
 
-export function DebtEditPopUp({ open, onClose, debtId, onSaved }: DebtEditPopUpProps) {
+export function DebtEditPopUp({
+                                  open,
+                                  onClose,
+                                  debtId,
+                                  onSaved
+                              }: DebtEditPopUpProps) {
 
-    const [debt, setDebt] = useState<DebtDetailsPayload | null>(null);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
 
-    const [amount, setAmount] = useState(0);
-    const [person, setPerson] = useState("");
-    const [description, setDescription] = useState("");
-    const [type, setType] = useState("");
-    const [status, setStatus] = useState("");
-    const [date, setDate] = useState("");
+    const [form, setForm] = useState({
+        amount: 0,
+        person: "",
+        description: "",
+        type: "LENT" as "LENT" | "BORROWED",
+        status: "PENDING" as "PENDING" | "PAID",
+        date: ""
+    });
 
     useEffect(() => {
-        if (!debtId || !open) return;
+        if (!open || !debtId) return;
 
         setLoading(true);
 
         debtsService.getDebtById(debtId)
             .then(res => {
-                setDebt(res);
-                setAmount(res.amount);
-                setPerson(res.person);
-                setDescription(res.description);
-                setType(res.type);
-                setStatus(res.status);
-                setDate(res.date);
+                setForm({
+                    amount: res.amount,
+                    person: res.person,
+                    description: res.description,
+                    type: res.type,
+                    status: res.status,
+                    date: res.date
+                });
             })
             .finally(() => setLoading(false));
 
-    }, [debtId, open]);
+    }, [open, debtId]);
 
     const handleSave = async () => {
-
-        if (amount <= 0) return toast.error("Amount must be greater than 0");
-        if (!person.trim()) return toast.error("Person is required");
-        if (!description.trim()) return toast.error("Description is required");
-        if (!type) return toast.error("Type is required");
-        if (!status) return toast.error("Status is required");
-
-        setSaving(true);
+        if (form.amount <= 0) return toast.error("Amount must be greater than 0");
+        if (!form.person.trim()) return toast.error("Person is required");
+        if (!form.description.trim()) return toast.error("Description is required");
 
         try {
-            await debtsService.updateDebtById(
-                { amount, person, description, type, status, date },
-                debtId
-            );
+            setSaving(true);
 
-            toast.success(`Debt ${debtId} updated successfully`);
+            await debtsService.updateDebtById(form, debtId);
 
-            if (onSaved) onSaved();
+            toast.success("Debt updated successfully");
+
+            onSaved();
             onClose();
-        } catch (err: any) {
-            toast.error(err.message || "Failed to update debt");
+
+        } catch (e: any) {
+            toast.error(e.message || "Update failed");
         } finally {
             setSaving(false);
         }
     };
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-            <DialogTitle>Edit Debt - ID: {debtId}</DialogTitle>
-            <DialogContent dividers>
-                {loading && <CircularProgress sx={{ display: 'block', mx: 'auto', my: 3 }} />}
+        <Dialog
+            open={open}
+            onClose={onClose}
+            fullWidth
+            maxWidth="sm"
+            PaperProps={{
+                sx: { borderRadius: 3, p: 1 }
+            }}
+        >
+            {/* HEADER */}
+            <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <Typography fontWeight="bold" variant="h6">
+                    Edit Debt
+                </Typography>
 
-                {debt && (
-                    <Grid container spacing={2}>
+                <IconButton onClick={onClose}>
+                    <Close />
+                </IconButton>
+            </DialogTitle>
 
-                        <Grid xs={12}>
-                            <Paper sx={{ p: 2 }}>
-                                <Typography variant="overline">Person</Typography>
-                                <TextField fullWidth value={person} onChange={(e) => setPerson(e.target.value)} />
-                            </Paper>
-                        </Grid>
+            {/* CONTENT */}
+            <DialogContent>
+                {loading ? (
+                    <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+                        <CircularProgress />
+                    </Box>
+                ) : (
+                    <Box sx={{ mt: 1 }}>
+                        <Grid container spacing={2}>
 
-                        <Grid xs={12}>
-                            <Paper sx={{ p: 2 }}>
-                                <Typography variant="overline">Amount</Typography>
-                                <TextField fullWidth type="number" value={amount}
-                                           onChange={(e) => setAmount(Number(e.target.value))} />
-                            </Paper>
-                        </Grid>
+                            {/* PERSON */}
+                            <Grid size={{xs: 12, sm: 6}}>
+                                <TextField
+                                    fullWidth
+                                    label="Person"
+                                    value={form.person}
+                                    onChange={(e) =>
+                                        setForm({ ...form, person: e.target.value })
+                                    }
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <AccountCircle />
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                />
+                            </Grid>
 
-                        <Grid xs={12}>
-                            <Paper sx={{ p: 2 }}>
-                                <Typography variant="overline">Description</Typography>
-                                <TextField fullWidth value={description}
-                                           onChange={(e) => setDescription(e.target.value)} />
-                            </Paper>
-                        </Grid>
+                            {/* AMOUNT */}
+                            <Grid size={{xs: 12, sm: 6}}>
+                                <TextField
+                                    fullWidth
+                                    type="number"
+                                    label="Amount"
+                                    value={form.amount || ""}
+                                    onChange={(e) =>
+                                        setForm({ ...form, amount: Number(e.target.value) })
+                                    }
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                €
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                />
+                            </Grid>
 
-                        <Grid xs={12}>
-                            <Paper sx={{ p: 2 }}>
-                                <Typography variant="overline">Type</Typography>
-                                <TextField select fullWidth value={type}
-                                           onChange={(e) => setType(e.target.value)}
-                                           SelectProps={{ native: true }}>
-                                    <option value="LENT">LENT</option>
-                                    <option value="BORROWED">BORROWED</option>
+                            {/* TYPE */}
+                            <Grid size={{xs: 12, sm: 6}}>
+                                <TextField
+                                    select
+                                    fullWidth
+                                    label="Type"
+                                    value={form.type}
+                                    onChange={(e) =>
+                                        setForm({ ...form, type: e.target.value as any })
+                                    }
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <Category />
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                >
+                                    <MenuItem value="LENT">Lent</MenuItem>
+                                    <MenuItem value="BORROWED">Borrowed</MenuItem>
                                 </TextField>
-                            </Paper>
-                        </Grid>
+                            </Grid>
 
-                        <Grid xs={12}>
-                            <Paper sx={{ p: 2 }}>
-                                <Typography variant="overline">Status</Typography>
-                                <TextField select fullWidth value={status}
-                                           onChange={(e) => setStatus(e.target.value)}
-                                           SelectProps={{ native: true }}>
-                                    <option value="PENDING">PENDING</option>
-                                    <option value="PAID">PAID</option>
+                            {/* STATUS */}
+                            <Grid size={{xs: 12, sm: 6}}>
+                                <TextField
+                                    select
+                                    fullWidth
+                                    label="Status"
+                                    value={form.status}
+                                    onChange={(e) =>
+                                        setForm({ ...form, status: e.target.value as any })
+                                    }
+                                >
+                                    <MenuItem value="PENDING">Pending</MenuItem>
+                                    <MenuItem value="PAID">Paid</MenuItem>
                                 </TextField>
-                            </Paper>
-                        </Grid>
+                            </Grid>
 
-                        <Grid xs={12}>
-                            <Paper sx={{ p: 2 }}>
-                                <Typography variant="overline">Date</Typography>
-                                <TextField fullWidth type="date" value={date}
-                                           onChange={(e) => setDate(e.target.value)} />
-                            </Paper>
-                        </Grid>
+                            {/* DATE */}
+                            <Grid size={{xs: 12, sm: 6}}>
+                                <TextField
+                                    fullWidth
+                                    type="date"
+                                    label="Date"
+                                    InputLabelProps={{ shrink: true }}
+                                    value={form.date}
+                                    onChange={(e) =>
+                                        setForm({ ...form, date: e.target.value })
+                                    }
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <Event />
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                />
+                            </Grid>
 
-                    </Grid>
+                            <Grid size={{ xs: 12 }}>
+                                <TextField
+                                    fullWidth
+                                    multiline
+                                    rows={3}
+                                    label="Description"
+                                    value={form.description}
+                                    onChange={(e) =>
+                                        setForm({ ...form, description: e.target.value })
+                                    }
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start" >
+                                                <Description />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    sx={{
+                                        "& .MuiInputBase-root": {
+                                            alignItems: "flex-start"
+                                        }
+                                    }}
+                                />
+                            </Grid>
+
+                        </Grid>
+                    </Box>
                 )}
             </DialogContent>
-            <DialogActions>
-                <Button variant="outlined" onClick={onClose} disabled={saving}>Cancel</Button>
-                <Button variant="contained" onClick={handleSave}
-                        disabled={saving}>{saving ? "Saving..." : "Save Changes"}</Button>
+
+            {/* ACTIONS */}
+            <DialogActions sx={{ p: 2 }}>
+                <Button onClick={onClose} color="inherit">
+                    Cancel
+                </Button>
+
+                <Button
+                    variant="contained"
+                    onClick={handleSave}
+                    disabled={saving}
+                    sx={{ px: 3, borderRadius: 2, fontWeight: "bold" }}
+                >
+                    {saving ? "Saving..." : "Update Debt"}
+                </Button>
             </DialogActions>
         </Dialog>
     );

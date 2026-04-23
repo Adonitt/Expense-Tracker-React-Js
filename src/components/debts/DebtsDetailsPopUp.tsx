@@ -6,224 +6,255 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Grid,
-    Paper,
-    Typography
+    Box,
+    Stack,
+    Typography,
+    Chip,
+    LinearProgress,
+    TextField,
+    Divider,
+    Paper
 } from "@mui/material";
-import {type DebtDetailsPayload, debtsService} from "../../services/debtsService";
+
+import CloseIcon from "@mui/icons-material/Close";
+import PaymentIcon from "@mui/icons-material/Payment";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CloseIcon from "@mui/icons-material/Close";
-import { DebtEditPopUp } from "./DebtEditPopUp";
-import { DebtDeleteDialog } from "./DebtDeleteDialog";
+import PersonIcon from "@mui/icons-material/Person";
 
-interface DebtDetailsPopUpProps {
-    open: boolean;
-    onClose: () => void;
-    debtId: number;
-    onDetails: () => void;
-}
+import {debtsService, type DebtDetailsPayload} from "../../services/debtsService";
 
-export function DebtDetailsPopUp({
-                                     open,
-                                     onClose,
-                                     debtId,
-                                     onDetails
-                                 }: DebtDetailsPopUpProps) {
+import {DebtEditPopUp} from "./DebtEditPopUp";
+import {DebtDeleteDialog} from "./DebtDeleteDialog";
+
+export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
 
     const [debt, setDebt] = useState<DebtDetailsPayload | null>(null);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
-    const [editPopUpOpen, setEditPopUpOpen] = useState(false);
-    const [deletePopUpOpen, setDeletePopUpOpen] = useState(false);
+    const [payAmount, setPayAmount] = useState(0);
+    const [paying, setPaying] = useState(false);
+
+    const [editOpen, setEditOpen] = useState(false);
+    const [deleteOpen, setDeleteOpen] = useState(false);
 
     useEffect(() => {
-        if (!debtId || !open) return;
+        if (!open) return;
 
         setLoading(true);
-        setDebt(null);
-        setError(null);
-
         debtsService.getDebtById(debtId)
             .then(res => setDebt(res))
-            .catch(err => setError(err.message))
             .finally(() => setLoading(false));
 
-    }, [debtId, open]);
+    }, [open, debtId]);
 
-    const handleEditClick = () => {
-        setEditPopUpOpen(true);
+    const progress = debt ? (debt.paidAmount / debt.amount) * 100 : 0;
+
+    const handlePay = async () => {
+        if (!debt) return;
+
+        if (payAmount <= 0) return;
+
+        setPaying(true);
+
+        try {
+            await debtsService.payDebt(debtId, {amount: payAmount});
+
+            const updated = await debtsService.getDebtById(debtId);
+            setDebt(updated);
+
+            setPayAmount(0);
+            onDetails();
+
+        } finally {
+            setPaying(false);
+        }
     };
 
-    const handleDeleteClick = () => {
-        setDeletePopUpOpen(true);
+    const fetchDebt = async () => {
+        const res = await debtsService.getDebtById(debtId);
+        setDebt(res);
     };
 
     return (
         <>
-            <Dialog
-                open={open}
-                onClose={onClose}
-                fullWidth
-                maxWidth="sm"
-                PaperProps={{
-                    sx: {
-                        backgroundColor: 'background.default',
-                        color: 'text.primary',
-                    }
-                }}
-                BackdropProps={{
-                    sx: {backgroundColor: 'rgba(0,0,0,0.9)'}
-                }}
-            >
-                <DialogTitle>Debt Details - ID: {debtId}</DialogTitle>
+            <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
 
-                <DialogContent dividers>
+                {/* HEADER (HERO STYLE) */}
+                <DialogTitle sx={{bgcolor: "#0f172a", color: "white"}}>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center">
 
+                        <Stack direction="row" spacing={1} alignItems="center">
+                            <PersonIcon/>
+                            <Typography fontWeight="bold">
+                                {debt?.person}
+                            </Typography>
+                        </Stack>
+
+                        <Chip
+                            label={debt?.status}
+                            sx={{
+                                bgcolor:
+                                    debt?.status === "PAID"
+                                        ? "#16a34a"
+                                        : debt?.status === "PARTIAL"
+                                            ? "#f59e0b"
+                                            : "#ef4444",
+                                color: "white"
+                            }}
+                        />
+
+                    </Stack>
+                </DialogTitle>
+
+                <DialogContent>
                     {loading && (
-                        <CircularProgress sx={{display: 'block', mx: 'auto', my: 3}}/>
+                        <Box sx={{textAlign: "center", py: 4}}>
+                            <CircularProgress/>
+                        </Box>
                     )}
 
-                    {error && <Typography color="error">{error}</Typography>}
-
                     {debt && (
-                        <Grid container spacing={2}>
+                        <>
 
-                            <Grid size={{xs: 12, sm: 6}}>
-                                <Paper sx={{p: 2}}>
-                                    <Typography variant="overline">Amount</Typography>
-                                    <Typography>
-                                        {debt.type === "LENT" ? `+${debt.amount}` : `-${debt.amount}`}
+                            <Stack direction="row" spacing={2} sx={{mt: 2}}>
+
+                                <Paper sx={{flex: 1, p: 2, borderRadius: 3}}>
+                                    <Typography variant="caption">Total</Typography>
+                                    <Typography fontWeight="bold" fontSize={20}>
+                                        €{debt.amount}
                                     </Typography>
                                 </Paper>
-                            </Grid>
 
-                            <Grid size={{xs: 12, sm: 6}}>
-                                <Paper sx={{p: 2}}>
-                                    <Typography variant="overline">Person</Typography>
-                                    <Typography>{debt.person}</Typography>
-                                </Paper>
-                            </Grid>
-
-                            {debt.transactionId && (
-                                <Grid size={{xs: 12, sm: 6}}>
-                                    <Paper sx={{p: 2}}>
-                                        <Typography variant="overline">Transaction ID</Typography>
-                                        <Typography>{debt.transactionId}</Typography>
-                                    </Paper>
-                                </Grid>
-                            )}
-
-                            <Grid size={{xs: 12, sm: 6}}>
-                                <Paper sx={{p: 2}}>
-                                    <Typography variant="overline">Type</Typography>
-                                    <Typography>{debt.type}</Typography>
-                                </Paper>
-                            </Grid>
-
-                            <Grid size={{xs: 12, sm: 6}}>
-                                <Paper sx={{p: 2}}>
-                                    <Typography variant="overline">Status</Typography>
-                                    <Typography>{debt.status}</Typography>
-                                </Paper>
-                            </Grid>
-
-                            <Grid size={{xs: 12}}>
-                                <Paper sx={{p: 2}}>
-                                    <Typography variant="overline">Description</Typography>
-                                    <Typography>{debt.description || "-"}</Typography>
-                                </Paper>
-                            </Grid>
-
-                            <Grid size={{xs: 12, sm: 6}}>
-                                <Paper sx={{p: 2}}>
-                                    <Typography variant="overline">Date</Typography>
-                                    <Typography>{debt.date}</Typography>
-                                </Paper>
-                            </Grid>
-
-                            <Grid size={{xs: 12, sm: 6}}>
-                                <Paper sx={{p: 2}}>
-                                    <Typography variant="overline">Created At</Typography>
-                                    <Typography>
-                                        {new Date(debt.createdAt).toLocaleString()}
+                                <Paper sx={{flex: 1, p: 2, borderRadius: 3}}>
+                                    <Typography variant="caption">Paid</Typography>
+                                    <Typography fontWeight="bold" color="green">
+                                        €{debt.paidAmount}
                                     </Typography>
                                 </Paper>
-                            </Grid>
 
-                            <Grid size={{xs: 12, sm: 6}}>
-                                <Paper sx={{p: 2}}>
-                                    <Typography variant="overline">Last Updated At</Typography>
-                                    <Typography>
-                                        {debt.updatedAt
-                                            ? new Date(debt.updatedAt).toLocaleString()
-                                            : "-"}
+                                <Paper sx={{flex: 1, p: 2, borderRadius: 3}}>
+                                    <Typography variant="caption">Remaining</Typography>
+                                    <Typography fontWeight="bold" color="red">
+                                        €{debt.remainingAmount}
                                     </Typography>
                                 </Paper>
-                            </Grid>
 
-                        </Grid>
+                            </Stack>
+
+                            {/* PROGRESS */}
+                            <Box sx={{mt: 3}}>
+                                <Typography variant="caption">Progress</Typography>
+
+                                <LinearProgress
+                                    variant="determinate"
+                                    value={progress}
+                                    sx={{
+                                        height: 10,
+                                        borderRadius: 5,
+                                        mt: 1
+                                    }}
+                                />
+
+                                <Typography sx={{mt: 1}} variant="caption">
+                                    {Math.round(progress)}% completed
+                                </Typography>
+                            </Box>
+
+                            <Divider sx={{my: 3}}/>
+                            {/* PAYMENT SECTION */}
+                            <Paper sx={{p: 2, borderRadius: 3}}>
+
+                                <Typography fontWeight="bold" sx={{mb: 1}}>
+                                    Quick Payment
+                                </Typography>
+
+                                {debt.status === "PAID" ? (
+
+                                    <Box
+                                        sx={{
+                                            textAlign: "center",
+                                            py: 3,
+                                            bgcolor: "#ecfdf5",
+                                            borderRadius: 2,
+                                            border: "1px solid #86efac"
+                                        }}
+                                    >
+                                        <Typography fontSize={18} fontWeight="bold" color="success.main">
+                                            🎉 Debt Fully Paid
+                                        </Typography>
+
+                                        <Typography variant="body2" color="text.secondary">
+                                            No remaining balance
+                                        </Typography>
+                                    </Box>
+
+                                ) : (
+                                    <>
+                                        <TextField
+                                            fullWidth
+                                            type="number"
+                                            value={payAmount}
+                                            onChange={(e) => setPayAmount(Number(e.target.value))}
+                                            placeholder="Enter amount"
+                                        />
+
+                                        <Button
+                                            fullWidth
+                                            variant="contained"
+                                            startIcon={<PaymentIcon/>}
+                                            sx={{mt: 2}}
+                                            disabled={paying || debt.remainingAmount === 0}
+                                            onClick={handlePay}
+                                        >
+                                            Pay Now
+                                        </Button>
+                                    </>
+                                )}
+
+                            </Paper>
+                        </>
                     )}
 
                 </DialogContent>
 
                 <DialogActions>
 
-                    <Button
-                        variant="outlined"
-                        color="secondary"
-                        startIcon={<CloseIcon/>}
-                        onClick={onClose}
-                    >
+                    <Button startIcon={<CloseIcon/>} onClick={onClose}>
                         Close
                     </Button>
 
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<EditIcon/>}
-                        onClick={handleEditClick}
-                    >
+                    <Button startIcon={<EditIcon/>} onClick={() => setEditOpen(true)}>
                         Edit
                     </Button>
 
-                    <Button
-                        variant="contained"
-                        color="error"
-                        startIcon={<DeleteIcon/>}
-                        onClick={handleDeleteClick}
-                    >
+                    <Button color="error" startIcon={<DeleteIcon/>} onClick={() => setDeleteOpen(true)}>
                         Delete
                     </Button>
 
                 </DialogActions>
+
             </Dialog>
 
-            {editPopUpOpen && (
+            {editOpen && (
                 <DebtEditPopUp
-                    open={editPopUpOpen}
+                    open={editOpen}
                     debtId={debtId}
-                    onClose={() => setEditPopUpOpen(false)}
+                    onClose={() => setEditOpen(false)}
                     onSaved={() => {
-                        setEditPopUpOpen(false);
-                        onDetails();
-                        setLoading(true);
-                        debtsService.getDebtById(debtId)
-                            .then(res => setDebt(res))
-                            .finally(() => setLoading(false));
+                        setEditOpen(false);
+                        fetchDebt();
                     }}
                 />
             )}
 
-            {/* DELETE DIALOG */}
-            {deletePopUpOpen && (
+            {deleteOpen && (
                 <DebtDeleteDialog
-                    open={deletePopUpOpen}
+                    open={deleteOpen}
                     debtId={debtId}
-                    onClose={() => setDeletePopUpOpen(false)}
+                    onClose={() => setDeleteOpen(false)}
                     onDelete={() => {
-                        setDeletePopUpOpen(false);
+                        setDeleteOpen(false);
                         onDetails();
                         onClose();
                     }}
