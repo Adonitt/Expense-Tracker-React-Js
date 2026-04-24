@@ -1,4 +1,4 @@
-import {apiClient} from "../helpers/client.ts";
+import { apiClient } from "../helpers/client.ts";
 
 interface LoginPayload {
     email: string,
@@ -21,7 +21,28 @@ interface ChangePasswordPayload {
 }
 
 export const authService = {
-    login: (data: LoginPayload) => apiClient('/auth/login', {method: 'POST', body: data}),
-    register: (data: RegisterPayload) => apiClient('/auth/register', {method: 'POST', body: data}),
-    changePassword: (data: ChangePasswordPayload) => apiClient('/auth/change-password', {method: 'PUT', body: data}),
-}
+    login: (data: LoginPayload) =>
+        apiClient('/auth/login', { method: 'POST', body: data }),
+
+    register: (data: RegisterPayload) =>
+        apiClient('/auth/register', { method: 'POST', body: data }),
+
+    changePassword: (data: ChangePasswordPayload) =>
+        apiClient('/auth/change-password', { method: 'PUT', body: data }),
+
+    forgotPassword: (email: string) =>
+        apiClient("/auth/forgot-password", {
+            method: "POST",
+            body: { email }
+        }),
+
+    resetPassword: (data: {
+        token: string;
+        newPassword: string;
+        confirmPassword: string;
+    }) =>
+        apiClient("/auth/reset-password", {
+            method: "POST",
+            body: data
+        }),
+};

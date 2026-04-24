@@ -57,6 +57,7 @@ export default function SignInCard() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+
         if (!validateInputs()) return;
 
         setLoading(true);
@@ -152,7 +153,6 @@ export default function SignInCard() {
                     label="Remember me"
                 />
 
-                <ForgotPassword open={open} handleClose={handleClose}/>
 
                 {apiError && (
                     <Typography color="error" sx={{textAlign: 'center'}}>
@@ -181,6 +181,8 @@ export default function SignInCard() {
                     </Link>
                 </Typography>
             </Box>
+            <ForgotPassword open={open} handleClose={handleClose}/>
+
         </CardComponent>
     );
 }

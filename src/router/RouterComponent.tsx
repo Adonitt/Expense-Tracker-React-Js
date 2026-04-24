@@ -9,6 +9,7 @@ import {UsersList} from "../components/users/UsersList.tsx";
 import MainGrid from "../components/dashboard/MainGrid.tsx";
 import {TransactionsList} from "../components/transactions/TransactionsList.tsx";
 import {DebtsList} from "../components/debts/DebtsList.tsx";
+import ResetPassword from "../components/login/ResetPassword.tsx";
 
 function RouterComponent() {
 
@@ -34,9 +35,9 @@ function RouterComponent() {
                 <Route path="users" element={<UsersList/>}/>
                 <Route path="transactions" element={<TransactionsList/>}/>
                 <Route path="debts" element={<DebtsList/>}/>
-
             </Route>
             <Route path="/oauth-success" element={<OAuthSuccess/>}/>
+            <Route path="/reset-password" element={<ResetPassword/>}/>
             <Route path="*" element={<Dashboard/>}/>
         </Routes>
     )
