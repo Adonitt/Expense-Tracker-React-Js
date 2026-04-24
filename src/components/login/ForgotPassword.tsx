@@ -40,8 +40,10 @@ export default function ForgotPassword({open, handleClose}: any) {
     };
 
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth
-                maxWidth="sm" PaperProps={{sx: {borderRadius: 4, backgroundImage: 'none'}}}
+        <Dialog open={open} onClose={handleClose}
+                fullWidth
+                maxWidth="sm"
+                PaperProps={{sx: {borderRadius: 4, backgroundImage: 'none'}}}
         >
             <DialogTitle>Reset Password</DialogTitle>
 
