@@ -28,6 +28,8 @@ import {type DebtDetailsPayload, debtsService} from "../../services/debtsService
 import {DebtEditPopUp} from "./DebtEditPopUp";
 import {DebtDeleteDialog} from "./DebtDeleteDialog";
 import Grid from "@mui/material/Grid";
+import {getLoggedInUser} from "../../utils/auth.ts";
+import {toast} from "react-toastify";
 
 export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
     const [debt, setDebt] = useState<DebtDetailsPayload | null>(null);
@@ -36,6 +38,12 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
     const [paying, setPaying] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
+
+    const user = getLoggedInUser()
+    const canModify =
+        user?.isActive &&
+        debt &&
+        debt.status !== "PAID";
 
     useEffect(() => {
         if (!open) return;
@@ -49,6 +57,7 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
 
     const handlePay = async () => {
         if (!debt || !payAmount || Number(payAmount) <= 0) return;
+
         setPaying(true);
         try {
             await debtsService.payDebt(debtId, {amount: Number(payAmount)});
@@ -56,6 +65,8 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
             setDebt(updated);
             setPayAmount("");
             onDetails();
+        } catch (err) {
+            toast.error(err.message || "Failed to update transaction");
         } finally {
             setPaying(false);
         }
@@ -175,7 +186,6 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
                                 />
                             </Box>
 
-                            {/* QUICK PAYMENT SECTION */}
                             <Paper sx={{
                                 p: 2.5,
                                 borderRadius: 4,
@@ -222,7 +232,7 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
                                         />
                                         <Button
                                             variant="contained"
-                                            disabled={paying || !payAmount}
+                                            disabled={paying || !payAmount || user?.isActive}
                                             onClick={handlePay}
                                             sx={{borderRadius: 3, px: 3, fontWeight: 'bold'}}
                                         >
@@ -232,7 +242,6 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
                                 )}
                             </Paper>
 
-                            {/* DESCRIPTION AREA */}
                             <Box sx={{mt: 3, p: 2, bgcolor: 'action.hover', borderRadius: 3}}>
                                 <Typography variant="caption" fontWeight="bold" color="text.secondary">REASON /
                                     DESCRIPTION</Typography>
@@ -249,14 +258,25 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
                 </DialogContent>
 
                 <DialogActions sx={{p: 3}}>
-                    <Button onClick={() => setDeleteOpen(true)} color="error" sx={{fontWeight: 'bold'}}>
-                        Delete
-                    </Button>
+                    {canModify && (
+                        <Button
+                            onClick={() => setDeleteOpen(true)}
+                            color="error"
+                            sx={{fontWeight: 'bold'}}
+                        >
+                            Delete
+                        </Button>
+                    )}
                     <Box sx={{flexGrow: 1}}/>
-                    <Button onClick={() => setEditOpen(true)} startIcon={<EditIcon/>}
-                            sx={{borderRadius: 2, fontWeight: 'bold'}}>
-                        Edit
-                    </Button>
+                    {canModify && (
+                        <Button
+                            onClick={() => setEditOpen(true)}
+                            startIcon={<EditIcon/>}
+                            sx={{borderRadius: 2, fontWeight: 'bold'}}
+                        >
+                            Edit
+                        </Button>
+                    )}
                     <Button variant="outlined" onClick={onClose} sx={{borderRadius: 2, fontWeight: 'bold'}}>
                         Close
                     </Button>

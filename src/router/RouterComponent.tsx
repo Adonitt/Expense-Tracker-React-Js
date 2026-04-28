@@ -1,12 +1,12 @@
 import {Route, Routes} from 'react-router-dom';
 import SignInSide from "../components/login/SignInSide.tsx";
-import Dashboard from "../components/Dashboard.tsx";
+import Dashboard from "../components/dashboard/Dashboard.tsx";
 import RegisterSide from "../components/register/RegisterSide.tsx";
 import GuestRoute from "./GuestRoute.ts";
 import PrivateRoute from "./PrivateRoute.tsx";
 import OAuthSuccess from '../components/login/OAuthSuccess.tsx';
 import {UsersList} from "../components/users/UsersList.tsx";
-import MainGrid from "../components/dashboard/MainGrid.tsx";
+import MainGrid from "../components/layouts/MainGrid.tsx";
 import {TransactionsList} from "../components/transactions/TransactionsList.tsx";
 import {DebtsList} from "../components/debts/DebtsList.tsx";
 import ResetPassword from "../components/login/ResetPassword.tsx";

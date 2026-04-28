@@ -33,6 +33,7 @@ import {TransactionCreatePopUp} from "./TransactionCreatePopUp.tsx";
 import {TransactionDeleteDialog} from "./TransactionDeleteDialog.tsx";
 import {TransactionDetailsPopUp} from "./TransactionDetailsPopUp.tsx";
 import {BalanceCard} from "../../helpers/BalanceCard.tsx";
+import {getLoggedInUser} from "../../utils/auth.ts";
 
 export function TransactionsList() {
     const [transactions, setTransactions] = useState<any[]>([]);
@@ -63,6 +64,7 @@ export function TransactionsList() {
             .catch(err => setError(err.message))
             .finally(() => setLoading(false));
     };
+    const user = getLoggedInUser();
 
     useEffect(() => {
         const today = new Date();
@@ -73,6 +75,7 @@ export function TransactionsList() {
         setFromDate(f);
         setToDate(t);
         fetchTransactions(f, t);
+
     }, []);
 
     const setMonthFilter = () => {
@@ -255,42 +258,43 @@ export function TransactionsList() {
                                             {t.description}
                                         </Typography>
                                     )}
-
-                                    <Stack
-                                        direction="row"
-                                        spacing={1}
-                                        sx={{
-                                            width: {xs: '100%', sm: 'auto'},
-                                            justifyContent: {xs: 'flex-end', sm: 'center'},
-                                            mt: {xs: 1, sm: 0},
-                                            position: {sm: 'absolute'},
-                                            right: {sm: 16}
-                                        }}
-                                    >
-                                        <IconButton
-                                            size="small"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setEditTransactionId(t.id);
-                                                setEditPopUpOpen(true);
+                                    {user?.isActive && t.type !== "DEBT" && (
+                                        <Stack
+                                            direction="row"
+                                            spacing={1}
+                                            sx={{
+                                                width: {xs: '100%', sm: 'auto'},
+                                                justifyContent: {xs: 'flex-end', sm: 'center'},
+                                                mt: {xs: 1, sm: 0},
+                                                position: {sm: 'absolute'},
+                                                right: {sm: 16}
                                             }}
-                                            sx={{bgcolor: {xs: 'action.selected', sm: 'transparent'}}}
                                         >
-                                            <EditIcon fontSize="small"/>
-                                        </IconButton>
-                                        <IconButton
-                                            size="small"
-                                            color="error"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setDeleteTransactionId(t.id);
-                                                setDeleteDialogOpen(true);
-                                            }}
-                                            sx={{bgcolor: {xs: 'error.lighter', sm: 'transparent'}}}
-                                        >
-                                            <DeleteIcon fontSize="small"/>
-                                        </IconButton>
-                                    </Stack>
+                                            <IconButton
+                                                size="small"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setEditTransactionId(t.id);
+                                                    setEditPopUpOpen(true);
+                                                }}
+                                                sx={{bgcolor: {xs: 'action.selected', sm: 'transparent'}}}
+                                            >
+                                                <EditIcon fontSize="small"/>
+                                            </IconButton>
+                                            <IconButton
+                                                size="small"
+                                                color="error"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setDeleteTransactionId(t.id);
+                                                    setDeleteDialogOpen(true);
+                                                }}
+                                                sx={{bgcolor: {xs: 'error.lighter', sm: 'transparent'}}}
+                                            >
+                                                <DeleteIcon fontSize="small"/>
+                                            </IconButton>
+                                        </Stack>
+                                    )}
                                 </ListItem>
                                 {index < paginatedTransactions.length - 1 && <Divider component="li"/>}
                             </Box>

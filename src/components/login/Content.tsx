@@ -25,7 +25,7 @@ const items = [
         icon: <ThumbUpAltRoundedIcon sx={{color: 'text.secondary'}}/>,
         title: 'User-Friendly Interface',
         description:
-            'Navigate effortlessly through the app with a clean and intuitive dashboard.',
+            'Navigate effortlessly through the app with a clean and intuitive layouts.',
     },
     {
         icon: <AutoFixHighRoundedIcon sx={{color: 'text.secondary'}}/>,

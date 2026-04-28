@@ -4,6 +4,7 @@ export interface AuthUser {
     firstName?: string;
     lastName?: string;
     role?: string;
+    isActive?: boolean;
     exp?: number;
 }
 
@@ -34,7 +35,8 @@ const getLoggedInUser = (): AuthUser | null => {
         role: decodedToken.role,
         firstName: decodedToken.firstName,
         lastName: decodedToken.lastName,
-        exp: decodedToken.exp
+        exp: decodedToken.exp,
+        isActive: decodedToken.isActive
     }
 }
 
