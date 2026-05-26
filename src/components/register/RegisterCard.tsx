@@ -15,7 +15,6 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
-
 function RegisterCard() {
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
@@ -28,7 +27,6 @@ function RegisterCard() {
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
 
     const [errors, setErrors] = useState({
         firstName: '',
@@ -43,51 +41,52 @@ function RegisterCard() {
         let isValid = true
         const newErrors = {...errors}
 
-        if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match'
+        if (password !== confirmPassword)
+            newErrors.confirmPassword = 'Fjalëkalimet nuk përputhen'
 
         if (!firstName) {
-            newErrors.firstName = 'First name is required'
+            newErrors.firstName = 'Emri është i detyrueshëm'
             isValid = false
         } else {
             newErrors.firstName = ''
         }
 
         if (!lastName) {
-            newErrors.lastName = 'Last name is required'
+            newErrors.lastName = 'Mbiemri është i detyrueshëm'
             isValid = false
         } else {
             newErrors.lastName = ''
         }
 
         if (!phoneNumber) {
-            newErrors.phoneNumber = 'Phone number is required'
+            newErrors.phoneNumber = 'Numri i telefonit është i detyrueshëm'
             isValid = false
         } else {
             newErrors.phoneNumber = ''
         }
 
         if (!email || !/\S+@\S+\.\S+/.test(email)) {
-            newErrors.email = 'Please enter a valid email address'
+            newErrors.email = 'Ju lutemi shkruani një email valid'
             isValid = false
         } else {
             newErrors.email = ''
         }
 
         if (!password || password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters long'
+            newErrors.password = 'Fjalëkalimi duhet të ketë të paktën 6 karaktere'
             isValid = false
         } else {
             newErrors.password = ''
         }
 
         if (confirmPassword !== password) {
-            newErrors.confirmPassword = 'Passwords do not match'
+            newErrors.confirmPassword = 'Fjalëkalimet nuk përputhen'
             isValid = false
         } else {
             newErrors.confirmPassword = ''
         }
 
-        if (!isValid) toast.warning("Please check your inputs!")
+        if (!isValid) toast.warning("Ju lutemi kontrolloni të dhënat!")
 
         setErrors(newErrors)
         return isValid
@@ -102,24 +101,23 @@ function RegisterCard() {
         const payload = {firstName, lastName, email, phoneNumber, password, confirmPassword};
 
         try {
-            const data = await authService.register(payload);
-            toast.success("Account created successfully!");
+            await authService.register(payload);
+            toast.success("Llogaria u krijua me sukses!");
             navigate('/login');
         } catch (err: any) {
-            setApiError(err.message || 'Register failed!');
-            toast.error(err.message || 'Register failed!');
+            setApiError(err.message || 'Regjistrimi dështoi!');
+            toast.error(err.message || 'Regjistrimi dështoi!');
         } finally {
             setLoading(false);
         }
     };
 
-
-    return <>
-
+    return (
         <CardComponent>
             <Box sx={{display: {xs: 'flex', md: 'none'}, justifyContent: 'center', mb: 2}}>
                 <SitemarkIcon fontSize="large"/>
             </Box>
+
             <Typography
                 component="h1"
                 variant="h4"
@@ -131,8 +129,9 @@ function RegisterCard() {
                     fontSize: 'clamp(1.8rem, 6vw, 2.2rem)',
                 }}
             >
-                Register
+                Regjistrohu
             </Typography>
+
             {apiError && (
                 <Typography color="error" sx={{textAlign: 'center'}}>
                     {apiError}
@@ -141,7 +140,7 @@ function RegisterCard() {
 
             <Box component="form" onSubmit={onHandleSubmit} sx={{maxWidth: 400, mx: 'auto', mt: 4}}>
                 <TextField
-                    label="First Name"
+                    label="Emri"
                     value={firstName}
                     onChange={(e) => {
                         setFirstName(e.target.value);
@@ -154,7 +153,7 @@ function RegisterCard() {
                 />
 
                 <TextField
-                    label="Last Name"
+                    label="Mbiemri"
                     value={lastName}
                     onChange={(e) => {
                         setLastName(e.target.value);
@@ -180,7 +179,7 @@ function RegisterCard() {
                 />
 
                 <TextField
-                    label="Phone Number"
+                    label="Numri i telefonit"
                     value={phoneNumber}
                     onChange={(e) => {
                         setPhoneNumber(e.target.value);
@@ -193,7 +192,7 @@ function RegisterCard() {
                 />
 
                 <TextField
-                    label="Password"
+                    label="Fjalëkalimi"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => {
@@ -216,7 +215,7 @@ function RegisterCard() {
                 />
 
                 <TextField
-                    label="Confirm Password"
+                    label="Konfirmo fjalëkalimin"
                     type={showConfirmPassword ? 'text' : 'password'}
                     value={confirmPassword}
                     onChange={(e) => {
@@ -246,19 +245,18 @@ function RegisterCard() {
                     disabled={loading}
                     sx={{mt: 1, py: 1.5, borderRadius: 3}}
                 >
-                    {loading ? 'Registering...' : 'Register now'}
+                    {loading ? 'Duke u regjistruar...' : 'Regjistrohu'}
                 </Button>
 
                 <Typography sx={{textAlign: 'center', mt: 2, fontSize: '0.9rem', color: 'text.secondary'}}>
-                    Already have an account?{' '}
+                    Ke llogari?{' '}
                     <Link href="/login" variant="body2">
-                        Log in
+                        Hyr
                     </Link>
                 </Typography>
             </Box>
-
         </CardComponent>
-    </>
+    );
 }
 
 export default RegisterCard;

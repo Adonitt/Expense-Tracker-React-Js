@@ -20,7 +20,7 @@ export function DebtDeleteDialog({ open, onClose, debtId, onDelete }: DebtDelete
         setLoading(true);
         try {
             await debtsService.deleteDebtById(debtId);
-            toast.success(`Debt ${debtId} deleted successfully`);
+            toast.success(`Borxhi me ID ${debtId} u fshi me sukses!`);
             onDelete();
             onClose();
         } catch (err: any) {
@@ -32,16 +32,16 @@ export function DebtDeleteDialog({ open, onClose, debtId, onDelete }: DebtDelete
 
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogTitle>Confirm Delete</DialogTitle>
+            <DialogTitle>Konfirmo Fshirjen</DialogTitle>
             <DialogContent dividers>
                 <Typography>
-                    Are you sure you want to delete debt {debtId}?
+                    A jeni i sigurtë që doni ta fshini borxhin me ID: {debtId}?
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button variant="outlined" onClick={onClose} disabled={loading}>Cancel</Button>
+                <Button variant="outlined" onClick={onClose} disabled={loading}>Jo, Anulo</Button>
                 <Button variant="contained" color="error" onClick={handleDelete} disabled={loading}>
-                    {loading ? "Deleting..." : "Delete"}
+                    {loading ? "Duke fshirë..." : " Po, Fshij"}
                 </Button>
             </DialogActions>
         </Dialog>

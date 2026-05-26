@@ -19,15 +19,15 @@ import {useState} from "react";
 import {ProfileEditPopUp} from "../profile/ProfileEditPopUp.tsx";
 
 const mainListItems = [
-    {text: 'Home', icon: <HomeRoundedIcon/>, path: '/'},
+    {text: 'Shtëpia', icon: <HomeRoundedIcon/>, path: '/'},
     {text: 'Users', icon: <PeopleRoundedIcon/>, path: '/users', adminOnly: true},
-    {text: 'Transactions', icon: <AnalyticsRoundedIcon/>, path: '/transactions'},
-    {text: 'Debts', icon: <AssignmentRoundedIcon/>, path: '/debts'},
+    {text: 'Transaksionet', icon: <AnalyticsRoundedIcon/>, path: '/transactions'},
+    {text: 'Borxhet', icon: <AssignmentRoundedIcon/>, path: '/debts'},
 ];
 
 const secondaryListItems = [
-    {text: 'My Profile', icon: <AccountCircleRoundedIcon/>, action: 'openProfile'},
-    {text: 'Change Password', icon: <LockResetRounded/>, action: 'changePassword'},
+    {text: 'Profili im', icon: <AccountCircleRoundedIcon/>, action: 'openProfile'},
+    {text: 'Ndrysho fjalëkalimin', icon: <LockResetRounded/>, action: 'changePassword'},
 ];
 
 interface MenuContentProps {

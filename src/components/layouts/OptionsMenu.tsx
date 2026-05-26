@@ -64,20 +64,20 @@ export default function OptionsMenu() {
                     handleClose();
                     setOpenProfile(true);
                 }}>
-                    My Profile
+                    Profili im
                 </MenuItem>
 
                 <MenuItem onClick={() => {
                     handleClose();
                     setOpenChangePassword(true);
                 }}>
-                    Change Password
+                    Përditëso Fjalëkalimin
                 </MenuItem>
 
                 <Divider/>
 
                 <MenuItem onClick={logout}>
-                    <ListItemText>Logout</ListItemText>
+                    <ListItemText>Shkyçu</ListItemText>
                     <ListItemIcon>
                         <LogoutRoundedIcon fontSize="small"/>
                     </ListItemIcon>

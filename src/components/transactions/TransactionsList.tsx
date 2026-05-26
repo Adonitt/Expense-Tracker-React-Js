@@ -47,6 +47,8 @@ export function TransactionsList() {
     const [createPopUpOpen, setCreatePopUpOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [deleteTransactionId, setDeleteTransactionId] = useState<number | null>(null);
+    const [typeFilter, setTypeFilter] = useState<"ALL" | "INCOME" | "EXPENSE">("ALL");
+
 
     const [fromDate, setFromDate] = useState<string>("");
     const [toDate, setToDate] = useState<string>("");
@@ -98,7 +100,15 @@ export function TransactionsList() {
         setPage(newPage);
     };
 
-    const paginatedTransactions = transactions.slice(
+    const filteredTransactions = typeFilter === "ALL"
+        ? transactions
+        : transactions.filter(t => t.type === typeFilter);
+
+    const sortedTransactions = [...filteredTransactions].sort((a, b) => {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+    });
+
+    const paginatedTransactions = sortedTransactions.slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage
     );
@@ -108,12 +118,45 @@ export function TransactionsList() {
     const totalVolume = totalIncome + totalExpense;
     const expensePercentage = totalVolume > 0 ? (totalExpense / totalVolume) * 100 : 0;
 
+
+    const typeLabel: any = {
+        INCOME: "Të ardhura",
+        EXPENSE: "Shpenzim",
+        DEBT: "Borxh"
+    };
+
+    const incomeCategoryLabel: any = {
+        SALARY: "Rrogë",
+        FREELANCE: "Freelance",
+        BUSINESS: "Biznes",
+        INVESTMENT: "Investim",
+        GIFTS: "Dhurata",
+        SAVINGS: "Kursime",
+        OTHER: "Tjetër"
+    };
+
+    const expenseCategoryLabel: any = {
+        RENT: "Qira",
+        GROCERIES: "Ushqime",
+        UTILITIES: "Fatura",
+        SUBSCRIPTIONS: "Abonime",
+        TRANSPORT: "Transport",
+        HEALTHCARE: "Shëndetësi",
+        ENTERTAINMENT: "Argëtim",
+        EDUCATION: "Arsim",
+        TAXES: "Taksë",
+        INSURANCE: "Sigurim",
+        SHOPPING: "Pazar",
+        TRAVEL: "Udhëtim",
+        OTHER: "Tjetër"
+    };
     return (
-        <PageContainer title="Finance Tracker">
+        <PageContainer title="Paneli i financave">
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{mb: 4}}>
                 <Box>
-                    <Typography variant="h4" fontWeight="800">Transactions</Typography>
-                    <Typography variant="body2" color="text.secondary">Manage your daily cash flow</Typography>
+                    <Typography variant="h4" fontWeight="800">Transaksionet</Typography>
+                    <Typography variant="body2" color="text.secondary"> Menaxho hyrjet dhe daljet e parave
+                    </Typography>
                 </Box>
                 <Button
                     variant="contained"
@@ -121,39 +164,74 @@ export function TransactionsList() {
                     onClick={() => setCreatePopUpOpen(true)}
                     sx={{borderRadius: 3, px: 3, py: 1, boxShadow: 3}}
                 >
-                    Add
+                    Shto
                 </Button>
             </Stack>
+
 
             <Paper elevation={0} sx={{p: 2, mb: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider'}}>
                 <Stack direction={{xs: "column", md: "row"}} spacing={2} alignItems="center">
                     <TextField
-                        type="date" size="small" label="From" InputLabelProps={{shrink: true}}
+                        type="date" size="small" label="Nga" InputLabelProps={{shrink: true}}
                         value={fromDate} onChange={(e) => setFromDate(e.target.value)}
                         sx={{width: {xs: "100%", md: 200}}}
                     />
                     <TextField
-                        type="date" size="small" label="To" InputLabelProps={{shrink: true}}
+                        type="date" size="small" label="Deri" InputLabelProps={{shrink: true}}
                         value={toDate} onChange={(e) => setToDate(e.target.value)}
                         sx={{width: {xs: "100%", md: 200}}}
                     />
                     <Button variant="contained" onClick={handleApplyFilter} startIcon={<FilterListIcon/>}>
-                        Apply
+                        Apliko
                     </Button>
                     <Button variant="outlined" onClick={setMonthFilter} startIcon={<CalendarMonthIcon/>}>
-                        This Month
+                        Shfaq këtë muaj
                     </Button>
                 </Stack>
             </Paper>
+            <Stack direction="row" spacing={1} sx={{mt: 2}}>
+                <Chip
+                    label="Të gjitha statuset"
+                    clickable
+                    color={typeFilter === "ALL" ? "primary" : "default"}
+                    onClick={() => setTypeFilter("ALL")}
+                />
 
-            <Typography variant="h6" sx={{mb: 2, fontWeight: 'bold'}}>Activity Feed</Typography>
+                <Chip
+                    label="Të ardhura"
+                    clickable
+                    color={typeFilter === "INCOME" ? "success" : "default"}
+                    onClick={() => setTypeFilter("INCOME")}
+                />
+
+                <Chip
+                    label="Shpenzime"
+                    clickable
+                    color={typeFilter === "EXPENSE" ? "error" : "default"}
+                    onClick={() => setTypeFilter("EXPENSE")}
+                />
+
+            </Stack>
+
+            <br/>
+            <Typography
+                variant="body2"
+                sx={{
+                    color: "text.secondary",
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 500,
+                    letterSpacing: "0.3px"
+                }}
+            >
+                Nga <b>{fromDate}</b> deri <b>{toDate}</b>
+            </Typography>
             <Paper elevation={0}
                    sx={{borderRadius: 4, border: '1px solid', borderColor: 'divider', overflow: 'hidden'}}>
                 <List sx={{p: 0}}>
                     {loading ? (
                         <LinearProgress/>
                     ) : transactions.length === 0 ? (
-                        <Typography sx={{p: 4, textAlign: 'center'}}>No transactions found.</Typography>
+                        <Typography sx={{p: 4, textAlign: 'center'}}>Nuk u gjetën transaksione.</Typography>
                     ) : (
                         paginatedTransactions.map((t, index) => (
                             <Box key={t.id}>
@@ -193,8 +271,10 @@ export function TransactionsList() {
                                             </ListItemAvatar>
                                             <Box>
                                                 <Typography fontWeight="700" variant="body1" sx={{lineHeight: 1.2}}>
-                                                    {t.category}
-                                                </Typography>
+                                                    {t.type === "INCOME"
+                                                        ? incomeCategoryLabel[t.category as keyof typeof incomeCategoryLabel] || 'Borxh'
+                                                        : expenseCategoryLabel[t.category as keyof typeof expenseCategoryLabel] || 'Borxh'
+                                                    }                                                </Typography>
                                                 <Typography variant="caption" color="text.secondary">
                                                     {t.date}
                                                 </Typography>
@@ -258,8 +338,7 @@ export function TransactionsList() {
                                             {t.description}
                                         </Typography>
                                     )}
-                                    {user?.isActive && t.type !== "DEBT" && (
-                                        <Stack
+                                    {user?.isActive && (<Stack
                                             direction="row"
                                             spacing={1}
                                             sx={{
@@ -318,8 +397,7 @@ export function TransactionsList() {
 
                     <Paper sx={{p: 3, borderRadius: 4, height: '100%', bgcolor: isDark ? '#1e293b' : '#fff'}}>
 
-                        <Typography variant="subtitle2" gutterBottom color="text.secondary">EXPENSE VS INCOME
-
+                        <Typography variant="subtitle2" gutterBottom color="text.secondary">Hyrje kundër shpenzime
                             RATIO</Typography>
 
                         <Stack direction="row" justifyContent="space-between" sx={{mb: 1}}>
@@ -335,40 +413,25 @@ export function TransactionsList() {
                             <Box sx={{
 
                                 width: '100%',
-
                                 height: 12,
-
                                 bgcolor: '#e0e0e0',
-
                                 borderRadius: 5,
-
                                 overflow: 'hidden',
-
                                 display: 'flex'
-
                             }}>
 
                                 <Box sx={{width: `${expensePercentage}%`, bgcolor: 'error.main', transition: '0.5s'}}/>
-
                                 <Box sx={{
-
-                                    width: `${100 - expensePercentage}%`,
-
-                                    bgcolor: 'success.main',
-
-                                    transition: '0.5s'
-
+                                    width: `${100 - expensePercentage}%`, bgcolor: 'success.main', transition: '0.5s'
                                 }}/>
-
                             </Box>
-
                         </Tooltip>
-
                         <Stack direction="row" spacing={2} sx={{mt: 2}}>
 
-                            <Chip size="small" label="Expenses" sx={{bgcolor: 'error.light', color: 'error.dark'}}/>
+                            <Chip size="small" label="Shpenzime" sx={{bgcolor: 'error.light', color: 'error.dark'}}/>
 
-                            <Chip size="small" label="Income" sx={{bgcolor: 'success.light', color: 'success.dark'}}/>
+                            <Chip size="small" label="Të ardhura"
+                                  sx={{bgcolor: 'success.light', color: 'success.dark'}}/>
 
                         </Stack>
 
@@ -384,8 +447,6 @@ export function TransactionsList() {
 
             </Grid>
 
-
-            {/* Të gjitha Pop-ups tuaja mbesin njësoj */}
 
             {createPopUpOpen && <TransactionCreatePopUp open={createPopUpOpen} onClose={() => setCreatePopUpOpen(false)}
 

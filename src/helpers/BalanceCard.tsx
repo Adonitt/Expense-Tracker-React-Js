@@ -20,7 +20,6 @@ export function BalanceCard({income, expense}: Props) {
                 gap: 2,
             }}
         >
-            {/* INCOME */}
             <Box
                 sx={{
                     p: 2,
@@ -34,7 +33,7 @@ export function BalanceCard({income, expense}: Props) {
                 <TrendingUpIcon sx={{color: "green", fontSize: 40}}/>
                 <Box>
                     <Typography variant="body2" color="text.secondary">
-                        Total Income
+                        Totali i të ardhurave
                     </Typography>
                     <Typography variant="h6" fontWeight="bold" color="green">
                         €{income}
@@ -55,7 +54,7 @@ export function BalanceCard({income, expense}: Props) {
                 <TrendingDownIcon sx={{color: "red", fontSize: 40}}/>
                 <Box>
                     <Typography variant="body2" color="text.secondary">
-                        Total Expense
+                        Totali i shpenzimeve
                     </Typography>
                     <Typography variant="h6" fontWeight="bold" color="red">
                         €{expense}
@@ -63,7 +62,6 @@ export function BalanceCard({income, expense}: Props) {
                 </Box>
             </Box>
 
-            {/* BALANCE */}
             <Box
                 sx={{
                     p: 2,
@@ -83,7 +81,7 @@ export function BalanceCard({income, expense}: Props) {
 
                 <Box>
                     <Typography variant="body2" color="text.secondary">
-                        Balance
+                        Diferenca
                     </Typography>
 
                     <Typography

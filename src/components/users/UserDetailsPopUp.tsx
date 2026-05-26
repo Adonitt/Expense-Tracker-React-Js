@@ -60,7 +60,7 @@ export function UserDetailsPopUp({ open, onClose, userId, onEdit }: UserDetailsP
             PaperProps={{ sx: { borderRadius: 4, backgroundImage: 'none' } }}
         >
             <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: 800 }}>
-                User Profile
+                Profili im
                 <IconButton onClick={onClose} size="small">
                     <CloseIcon />
                 </IconButton>
@@ -76,7 +76,6 @@ export function UserDetailsPopUp({ open, onClose, userId, onEdit }: UserDetailsP
                     <Typography color="error" textAlign="center" sx={{ my: 3 }}>{error}</Typography>
                 ) : user && (
                     <>
-                        {/* PROFILE HEADER */}
                         <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 4, mt: 1 }}>
                             <Avatar sx={{
                                 width: 70,
@@ -112,7 +111,6 @@ export function UserDetailsPopUp({ open, onClose, userId, onEdit }: UserDetailsP
                         </Stack>
 
                         <Grid container spacing={2}>
-                            {/* EMAIL */}
                             <Grid size={{ xs: 12, sm: 6 }}>
                                 <Paper variant="outlined" sx={{ p: 2, borderRadius: 3, bgcolor: 'action.hover' }}>
                                     <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
@@ -123,23 +121,21 @@ export function UserDetailsPopUp({ open, onClose, userId, onEdit }: UserDetailsP
                                 </Paper>
                             </Grid>
 
-                            {/* PHONE */}
                             <Grid size={{ xs: 12, sm: 6 }}>
                                 <Paper variant="outlined" sx={{ p: 2, borderRadius: 3, bgcolor: 'action.hover' }}>
                                     <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
                                         <PhoneIcon fontSize="small" color="primary" />
-                                        <Typography variant="overline" fontWeight="700" color="text.secondary">Phone Number</Typography>
+                                        <Typography variant="overline" fontWeight="700" color="text.secondary">Numri i telefonit</Typography>
                                     </Stack>
                                     <Typography variant="body1" fontWeight="600">{user.phoneNumber || 'Not provided'}</Typography>
                                 </Paper>
                             </Grid>
 
-                            {/* REGISTRATION DATE */}
                             <Grid size={{ xs: 12, sm: 6 }}>
                                 <Paper variant="outlined" sx={{ p: 2, borderRadius: 3, bgcolor: 'action.hover' }}>
                                     <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
                                         <EventIcon fontSize="small" color="primary" />
-                                        <Typography variant="overline" fontWeight="700" color="text.secondary">Member Since</Typography>
+                                        <Typography variant="overline" fontWeight="700" color="text.secondary">Përdorues që nga</Typography>
                                     </Stack>
                                     <Typography variant="body1" fontWeight="600">
                                         {dayjs(user.registeredAt).format("MMMM D, YYYY")}
@@ -147,12 +143,11 @@ export function UserDetailsPopUp({ open, onClose, userId, onEdit }: UserDetailsP
                                 </Paper>
                             </Grid>
 
-                            {/* USER ID */}
                             <Grid size={{ xs: 12, sm: 6 }}>
                                 <Paper variant="outlined" sx={{ p: 2, borderRadius: 3, bgcolor: 'action.hover' }}>
                                     <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
                                         <BadgeIcon fontSize="small" color="primary" />
-                                        <Typography variant="overline" fontWeight="700" color="text.secondary">Account ID</Typography>
+                                        <Typography variant="overline" fontWeight="700" color="text.secondary">ID e llogarisë</Typography>
                                     </Stack>
                                     <Typography variant="body1" fontWeight="600">#{userId}</Typography>
                                 </Paper>
@@ -169,7 +164,7 @@ export function UserDetailsPopUp({ open, onClose, userId, onEdit }: UserDetailsP
                     onClick={onClose}
                     sx={{ borderRadius: 2, px: 3, fontWeight: 'bold' }}
                 >
-                    Close
+                    Mbyll
                 </Button>
                 <Box sx={{ flexGrow: 1 }} />
                 <Button
@@ -182,7 +177,7 @@ export function UserDetailsPopUp({ open, onClose, userId, onEdit }: UserDetailsP
                     }}
                     sx={{ borderRadius: 2, px: 4, fontWeight: "bold", boxShadow: 3 }}
                 >
-                    Edit Profile
+                    Përditëso profilin
                 </Button>
             </DialogActions>
         </Dialog>

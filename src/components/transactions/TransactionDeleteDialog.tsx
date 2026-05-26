@@ -34,14 +34,14 @@ export function TransactionDeleteDialog({open, onClose, transactionId, onDelete}
         <Dialog open={open} onClose={onClose}
                 PaperProps={{sx: {borderRadius: 4, backgroundImage: 'none'}}}
         >
-            <DialogTitle>Confirm Delete</DialogTitle>
+            <DialogTitle>Konfirmo Fshirjen</DialogTitle>
             <DialogContent dividers>
-                <Typography>Are you sure you want to delete transaction with ID:{transactionId}?</Typography>
+                <Typography>A jeni të sigurtë se doni të fshini transaksionin me ID:{transactionId}?</Typography>
             </DialogContent>
             <DialogActions>
-                <Button variant="outlined" onClick={onClose} disabled={loading}>Cancel</Button>
+                <Button variant="outlined" onClick={onClose} disabled={loading}>Jo, Anulo</Button>
                 <Button variant="contained" color="error" onClick={handleDelete} disabled={loading}>
-                    {loading ? "Deleting..." : "Delete"}
+                    {loading ? "Duke fshirë..." : "Po, fshij"}
                 </Button>
             </DialogActions>
         </Dialog>

@@ -1,33 +1,33 @@
 import {useEffect, useState} from "react";
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    Button,
-    MenuItem,
-    InputAdornment,
-    IconButton,
-    Typography,
-    Grid,
     Avatar,
-    Stack,
     Box,
-    CircularProgress
+    Button,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Grid,
+    IconButton,
+    InputAdornment,
+    MenuItem,
+    Stack,
+    TextField,
+    Typography
 } from "@mui/material";
 import {
     AttachMoney,
-    Event,
-    Description,
     Category,
     Close,
     CompareArrows,
-    TrendingUp,
-    TrendingDown
+    Description,
+    Event,
+    TrendingDown,
+    TrendingUp
 } from "@mui/icons-material";
 import {toast} from "react-toastify";
-import {transactionsService, type TransactionDetailsPayload} from "../../services/transactionsService.ts";
+import {transactionsService} from "../../services/transactionsService.ts";
 
 interface TransactionEditPopUpProps {
     open: boolean;
@@ -70,7 +70,7 @@ export function TransactionEditPopUp({open, onClose, transactionId, onSaved}: Tr
 
     const handleSave = async () => {
         if (amount <= 0 || !type || !category || !date) {
-            toast.warning("Please fill all required fields correctly.");
+            toast.warning("Ju lutem mbushni të gjitha fushat e nevojshme.");
             return;
         }
 
@@ -80,7 +80,7 @@ export function TransactionEditPopUp({open, onClose, transactionId, onSaved}: Tr
                 {category, amount, type, description, date},
                 transactionId
             );
-            toast.success("Transaction updated successfully!");
+            toast.success("Transaksioni u përditësua me sukses!");
             if (onSaved) onSaved();
             onClose();
         } catch (err: any) {
@@ -89,7 +89,33 @@ export function TransactionEditPopUp({open, onClose, transactionId, onSaved}: Tr
             setSaving(false);
         }
     };
+    const typeLabel: any = {
+        INCOME: "Të ardhura",
+        EXPENSE: "Shpenzim",
+        DEBT: "Borxh"
+    };
+    const categoryLabels: Record<string, string> = {
+        SALARY: "Rrogë",
+        FREELANCE: "Freelance",
+        BUSINESS: "Biznes",
+        INVESTMENT: "Investim",
+        GIFTS: "Dhurata",
+        SAVINGS: "Kursime",
+        OTHER: "Tjetër",
 
+        RENT: "Qira",
+        GROCERIES: "Ushqime",
+        UTILITIES: "Fatura",
+        SUBSCRIPTIONS: "Abonime",
+        TRANSPORT: "Transport",
+        HEALTHCARE: "Shëndetësi",
+        ENTERTAINMENT: "Argëtim",
+        EDUCATION: "Arsim",
+        TAXES: "Taksë",
+        INSURANCE: "Sigurim",
+        SHOPPING: "Pazar",
+        TRAVEL: "Udhëtim",
+    };
     return (
         <Dialog
             open={open}
@@ -109,7 +135,7 @@ export function TransactionEditPopUp({open, onClose, transactionId, onSaved}: Tr
                 {loading ? (
                     <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', my: 5}}>
                         <CircularProgress size={40}/>
-                        <Typography sx={{mt: 2}} color="text.secondary">Loading data...</Typography>
+                        <Typography sx={{mt: 2}} color="text.secondary">Duke marrë të dhëna...</Typography>
                     </Box>
                 ) : (
                     <>
@@ -129,14 +155,14 @@ export function TransactionEditPopUp({open, onClose, transactionId, onSaved}: Tr
                                     ID: #{transactionId}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                    Modify the transaction details below
+                                    Përditëso duke mbushur fushat e nevojshme
                                 </Typography>
                             </Box>
                         </Stack>
 
                         <Grid container spacing={2}>
                             <Grid size={{xs: 12, sm: 6}}>
-                                <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ml: 1}}>Amount
+                                <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ml: 1}}>Vlera
                                     (€)</Typography>
                                 <TextField
                                     fullWidth
@@ -156,7 +182,7 @@ export function TransactionEditPopUp({open, onClose, transactionId, onSaved}: Tr
 
                             <Grid size={{xs: 12, sm: 6}}>
                                 <Typography variant="overline" fontWeight="700" color="text.secondary"
-                                            sx={{ml: 1}}>Type</Typography>
+                                            sx={{ml: 1}}>Tipi</Typography>
                                 <TextField
                                     select
                                     fullWidth
@@ -175,14 +201,14 @@ export function TransactionEditPopUp({open, onClose, transactionId, onSaved}: Tr
                                         sx: {borderRadius: 3}
                                     }}
                                 >
-                                    <MenuItem value="INCOME">Income</MenuItem>
-                                    <MenuItem value="EXPENSE">Expense</MenuItem>
+                                    <MenuItem value="INCOME">Të hyra</MenuItem>
+                                    <MenuItem value="EXPENSE">Shpenzime</MenuItem>
                                 </TextField>
                             </Grid>
 
                             <Grid size={{xs: 12, sm: 6}}>
                                 <Typography variant="overline" fontWeight="700" color="text.secondary"
-                                            sx={{ml: 1}}>Category</Typography>
+                                            sx={{ml: 1}}>Kategoria</Typography>
                                 <TextField
                                     select
                                     fullWidth
@@ -198,14 +224,16 @@ export function TransactionEditPopUp({open, onClose, transactionId, onSaved}: Tr
                                     }}
                                 >
                                     {(type === "INCOME" ? incomeCategories : expenseCategories).map(cat => (
-                                        <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+                                        <MenuItem key={cat} value={cat}>
+                                            {categoryLabels[cat] || cat}
+                                        </MenuItem>
                                     ))}
                                 </TextField>
                             </Grid>
 
                             <Grid size={{xs: 12, sm: 6}}>
                                 <Typography variant="overline" fontWeight="700" color="text.secondary"
-                                            sx={{ml: 1}}>Date</Typography>
+                                            sx={{ml: 1}}>Data</Typography>
                                 <TextField
                                     fullWidth
                                     type="date"
@@ -222,8 +250,9 @@ export function TransactionEditPopUp({open, onClose, transactionId, onSaved}: Tr
                                 />
                             </Grid>
 
-                            <Grid size={{ xs: 12 }}>
-                                <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Description</Typography>
+                            <Grid size={{xs: 12}}>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary"
+                                            sx={{ml: 1}}>Përshkrimi</Typography>
                                 <Box sx={{
                                     p: 2,
                                     borderRadius: 3,

@@ -7,31 +7,30 @@ import SettingsSuggestRoundedIcon from '@mui/icons-material/SettingsSuggestRound
 import ThumbUpAltRoundedIcon from '@mui/icons-material/ThumbUpAltRounded';
 import {ExpenseIcon} from '../../theme/CustomIcons.tsx';
 
-
 const items = [
     {
         icon: <SettingsSuggestRoundedIcon sx={{color: 'text.secondary'}}/>,
-        title: 'Track Expenses Easily',
+        title: 'Ndjek lehtësisht shpenzimet',
         description:
-            'Quickly log all your income and expenses to always know where your money goes.',
+            'Regjistro shpejt të gjitha të ardhurat dhe shpenzimet për të ditur gjithmonë ku shkojnë paratë e tua.',
     },
     {
         icon: <ConstructionRoundedIcon sx={{color: 'text.secondary'}}/>,
-        title: 'Generate Reports',
+        title: 'Gjenero raporte',
         description:
-            'Get detailed monthly or yearly reports to analyze your spending habits effectively.',
+            'Merr raporte të detajuara mujore ose vjetore për të analizuar zakonet e shpenzimeve të tua.',
     },
     {
         icon: <ThumbUpAltRoundedIcon sx={{color: 'text.secondary'}}/>,
-        title: 'User-Friendly Interface',
+        title: 'Ndërfaqe e lehtë për përdorim',
         description:
-            'Navigate effortlessly through the app with a clean and intuitive layouts.',
+            'Lëviz lehtësisht në aplikacion me një dizajn të pastër dhe intuitiv.',
     },
     {
         icon: <AutoFixHighRoundedIcon sx={{color: 'text.secondary'}}/>,
-        title: 'Budget & Alerts',
+        title: 'Buxhet & Njoftime',
         description:
-            'Set budgets for different categories and receive notifications when you approach limits.',
+            'Vendos buxhete për kategori të ndryshme dhe merr njoftime kur i afrohesh limitit.',
     },
 ];
 

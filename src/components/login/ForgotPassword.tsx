@@ -19,21 +19,21 @@ export default function ForgotPassword({open, handleClose}: any) {
 
     const handleSubmit = async () => {
         if (!email) {
-            toast.error("Email is required");
+            toast.error("Email është e domosdoshme!");
             return;
         }
 
         try {
             setLoading(true);
 
-            toast.info("Sending reset link...");
+            toast.info("Duke dërguar lidhjen...");
 
             await authService.forgotPassword(email);
 
 
             handleClose();
         } catch (err: any) {
-            toast.error(err.message || "Something went wrong");
+            toast.error(err.message || "Diçka shkoi gabim!");
         } finally {
             setLoading(false);
         }
@@ -45,7 +45,7 @@ export default function ForgotPassword({open, handleClose}: any) {
                 maxWidth="sm"
                 PaperProps={{sx: {borderRadius: 4, backgroundImage: 'none'}}}
         >
-            <DialogTitle>Reset Password</DialogTitle>
+            <DialogTitle>Kam harruar passwordin</DialogTitle>
 
             <DialogContent>
                 <OutlinedInput
@@ -58,14 +58,14 @@ export default function ForgotPassword({open, handleClose}: any) {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleClose}>Cancel</Button>
+                <Button onClick={handleClose}>Anulo</Button>
 
                 <Button
                     onClick={handleSubmit}
                     disabled={loading}
                     variant="contained"
                 >
-                    {loading ? "Sending..." : "Send"}
+                    {loading ? "Duke dërguar..." : "Dërgo"}
                 </Button>
             </DialogActions>
         </Dialog>

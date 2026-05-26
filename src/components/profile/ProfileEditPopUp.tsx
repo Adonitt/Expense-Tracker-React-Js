@@ -37,7 +37,6 @@ export const ProfileEditPopUp = ({open, onClose, user: loggedInUser, onSaved}: P
     React.useEffect(() => {
         if (open && loggedInUser?.id) {
             setLoading(true);
-            // Thërrasim getUserById për të marrë të dhënat e freskëta (përfshirë numrin e telefonit)
             userService.getUserById(loggedInUser.id)
                 .then(res => {
                     setForm({
@@ -59,7 +58,7 @@ export const ProfileEditPopUp = ({open, onClose, user: loggedInUser, onSaved}: P
         setSaving(true);
         try {
             await userService.updateSelf(form);
-            toast.success("Profile updated successfully!");
+            toast.success("Profili u përdit♪7sua me sukses!");
             onSaved?.();
             onClose();
         } catch (err: any) {
@@ -74,11 +73,11 @@ export const ProfileEditPopUp = ({open, onClose, user: loggedInUser, onSaved}: P
             open={open}
             onClose={onClose}
             fullWidth
-            maxWidth="sm" // E bëra pak më të gjerë që të duket më pastër
+            maxWidth="sm"
             PaperProps={{ sx: { borderRadius: 4, backgroundImage: 'none' } }}
         >
             <DialogTitle sx={{display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: 800}}>
-                Edit My Profile
+                Përditëso Profilin
                 <IconButton onClick={onClose} size="small"><Close/></IconButton>
             </DialogTitle>
 
@@ -94,8 +93,8 @@ export const ProfileEditPopUp = ({open, onClose, user: loggedInUser, onSaved}: P
                                 <ManageAccounts/>
                             </Avatar>
                             <Box>
-                                <Typography variant="subtitle1" fontWeight="bold">Personal Information</Typography>
-                                <Typography variant="caption" color="text.secondary">Update your public details</Typography>
+                                <Typography variant="subtitle1" fontWeight="bold">Të dhëna personale</Typography>
+                                <Typography variant="caption" color="text.secondary">Përditëso të dhënat tua publike</Typography>
                             </Box>
                         </Stack>
 
@@ -103,7 +102,7 @@ export const ProfileEditPopUp = ({open, onClose, user: loggedInUser, onSaved}: P
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
-                                    label="First Name"
+                                    label="Emri"
                                     value={form.firstName}
                                     onChange={(e) => setForm({...form, firstName: e.target.value})}
                                     InputProps={{
@@ -115,7 +114,7 @@ export const ProfileEditPopUp = ({open, onClose, user: loggedInUser, onSaved}: P
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
-                                    label="Last Name"
+                                    label="Mbiemri"
                                     value={form.lastName}
                                     onChange={(e) => setForm({...form, lastName: e.target.value})}
                                     InputProps={{
@@ -139,7 +138,7 @@ export const ProfileEditPopUp = ({open, onClose, user: loggedInUser, onSaved}: P
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
-                                    label="Phone Number"
+                                    label="Numri i telefonit"
                                     value={form.phoneNumber}
                                     onChange={(e) => setForm({...form, phoneNumber: e.target.value})}
                                     InputProps={{
@@ -154,14 +153,14 @@ export const ProfileEditPopUp = ({open, onClose, user: loggedInUser, onSaved}: P
             </DialogContent>
 
             <DialogActions sx={{p: 3}}>
-                <Button onClick={onClose} color="inherit">Cancel</Button>
+                <Button onClick={onClose} color="inherit">Mbyll</Button>
                 <Button
                     variant="contained"
                     onClick={handleSave}
                     disabled={saving || loading}
                     sx={{borderRadius: 2, px: 4, fontWeight: 'bold'}}
                 >
-                    {saving ? "Saving..." : "Save Changes"}
+                    {saving ? "Duke ruajtur..." : "Ruaj ndryshimet"}
                 </Button>
             </DialogActions>
         </Dialog>

@@ -12,7 +12,7 @@ function GoogleLoginButton() {
             onClick={() => window.location.href = GOOGLE_OAUTH_URL}
             startIcon={<GoogleIcon/>}
         >
-            Sign in with Google
+            Kyçu me Google
         </Button>
     </>
 }

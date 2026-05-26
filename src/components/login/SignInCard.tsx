@@ -17,7 +17,6 @@ import {toast} from "react-toastify";
 import {Divider} from "@mui/material";
 import GoogleLoginButton from "./GoogleLoginButton.tsx";
 
-
 export default function SignInCard() {
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
@@ -37,7 +36,7 @@ export default function SignInCard() {
         let isValid = true;
         if (!email || !/\S+@\S+\.\S+/.test(email)) {
             setEmailError(true);
-            setEmailErrorMessage('Please enter a valid email address.');
+            setEmailErrorMessage('Ju lutemi shkruani një email valid.');
             isValid = false;
         } else {
             setEmailError(false);
@@ -45,13 +44,13 @@ export default function SignInCard() {
         }
         if (!password || password.length < 6) {
             setPasswordError(true);
-            setPasswordErrorMessage('Password must be at least 6 characters long.');
+            setPasswordErrorMessage('Fjalëkalimi duhet të ketë të paktën 6 karaktere.');
             isValid = false;
         } else {
             setPasswordError(false);
             setPasswordErrorMessage('');
         }
-        if (!isValid) toast.warning("Please check your inputs!");
+        if (!isValid) toast.warning("Ju lutemi kontrolloni të dhënat!");
         return isValid;
     };
 
@@ -68,7 +67,7 @@ export default function SignInCard() {
             localStorage.setItem('token', data.token);
             navigate('/');
         } catch (err: any) {
-            setApiError(err.message || 'Login failed');
+            setApiError(err.message || 'Login dështoi');
         } finally {
             setLoading(false);
         }
@@ -91,7 +90,7 @@ export default function SignInCard() {
                     fontSize: 'clamp(1.8rem, 6vw, 2.2rem)',
                 }}
             >
-                Sign in
+                Hyrje
             </Typography>
 
             <Box
@@ -121,14 +120,14 @@ export default function SignInCard() {
 
                 <FormControl fullWidth>
                     <Box sx={{display: 'flex', justifyContent: 'space-between', mb: 1}}>
-                        <FormLabel htmlFor="password" sx={{fontWeight: 500}}>Password</FormLabel>
+                        <FormLabel htmlFor="password" sx={{fontWeight: 500}}>Fjalëkalimi</FormLabel>
                         <Link
                             component="button"
                             type="button"
                             onClick={handleClickOpen}
                             variant="body2"
                         >
-                            Forgot password?
+                            Keni harruar fjalëkalimin?
                         </Link>
                     </Box>
                     <TextField
@@ -150,9 +149,8 @@ export default function SignInCard() {
 
                 <FormControlLabel
                     control={<Checkbox value="remember" color="primary"/>}
-                    label="Remember me"
+                    label="Më mbaj mend"
                 />
-
 
                 {apiError && (
                     <Typography color="error" sx={{textAlign: 'center'}}>
@@ -168,21 +166,24 @@ export default function SignInCard() {
                     disabled={loading}
                     sx={{mt: 1, py: 1.5, borderRadius: 3}}
                 >
-                    {loading ? 'Signing in...' : 'Sign in'}
+                    {loading ? 'Duke u kyçur...' : 'Hyr'}
                 </Button>
-                <Divider>or</Divider>
+
+                <Divider>ose</Divider>
+
                 <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
-                    <GoogleLoginButton/>
+                    <GoogleLoginButton />
                 </Box>
+
                 <Typography sx={{textAlign: 'center', mt: 2, fontSize: '0.9rem', color: 'text.secondary'}}>
-                    Don&apos;t have an account?{' '}
+                    Nuk ke llogari?{' '}
                     <Link href="/register" variant="body2">
-                        Sign up
+                        Regjistrohu
                     </Link>
                 </Typography>
             </Box>
-            <ForgotPassword open={open} handleClose={handleClose}/>
 
+            <ForgotPassword open={open} handleClose={handleClose}/>
         </CardComponent>
     );
 }

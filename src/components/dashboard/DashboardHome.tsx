@@ -39,10 +39,11 @@ export default function DashboardHome() {
 
             <Box sx={{ mb: 4 }}>
                 <Typography variant="h4" fontWeight="800">
-                    Finance Dashboard
+                    Paneli i financave
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                     Overview of your income, expenses and debt
+
                 </Typography>
             </Box>
 

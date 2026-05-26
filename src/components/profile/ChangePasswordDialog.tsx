@@ -41,17 +41,17 @@ export const ChangePasswordDialog = ({ open, onClose }: Props) => {
 
     const handleSave = async () => {
         if (!oldPassword || !newPassword || !confirmPassword) {
-            toast.warning("Please fill in all fields");
+            toast.warning("Ju lutem mbushni të gjitha fushat!");
             return;
         }
 
         if (newPassword.length < 6) {
-            toast.warning("New password must be at least 6 characters long");
+            toast.warning("Fjalëkalimi i ri duhet të ketë më shumë se 6 karaktere");
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            toast.warning("New passwords do not match");
+            toast.warning("Fjalëkalimet nuk përputhen");
             return;
         }
 
@@ -62,7 +62,7 @@ export const ChangePasswordDialog = ({ open, onClose }: Props) => {
                 newPassword,
                 confirmPassword,
             });
-            toast.success("Password changed successfully");
+            toast.success("Fjalëkalimi u përditësua me sukses!");
             setOldPassword("");
             setNewPassword("");
             setConfirmPassword("");
@@ -83,7 +83,7 @@ export const ChangePasswordDialog = ({ open, onClose }: Props) => {
             PaperProps={{ sx: { borderRadius: 4, backgroundImage: 'none' } }}
         >
             <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: 800 }}>
-                Security Settings
+                Cilësimet e sigurisë
                 <IconButton onClick={onClose} size="small">
                     <Close />
                 </IconButton>
@@ -102,21 +102,21 @@ export const ChangePasswordDialog = ({ open, onClose }: Props) => {
                     </Avatar>
                     <Box>
                         <Typography variant="h6" fontWeight="900">
-                            Update Password
+                            Përditëso Fjalëkalimin
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            Ensure your account stays secure
+                            Sigurohu që llogaria jote të jetë e sigurtë
                         </Typography>
                     </Box>
                 </Stack>
 
                 <Grid container spacing={2.5}>
                     <Grid size={{ xs: 12 }}>
-                        <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Current Password</Typography>
+                        <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Fjalëkalimi i tanishëm</Typography>
                         <TextField
                             fullWidth
                             type={showOld ? "text" : "password"}
-                            placeholder={'Enter your current password'}
+                            placeholder={'Fut fjalëkalimin e tanishëm'}
                             value={oldPassword}
                             onChange={(e) => setOldPassword(e.target.value)}
                             InputProps={{
@@ -134,12 +134,12 @@ export const ChangePasswordDialog = ({ open, onClose }: Props) => {
                     </Grid>
 
                     <Grid size={{ xs: 12 }}>
-                        <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>New Password</Typography>
+                        <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Fjalëkalimi i ri</Typography>
                         <TextField
                             fullWidth
                             type={showNew ? "text" : "password"}
                             value={newPassword}
-                            placeholder={'Enter your new password'}
+                            placeholder={'Fut fjalëkalimin e ri'}
                             onChange={(e) => setNewPassword(e.target.value)}
                             InputProps={{
                                 startAdornment: <InputAdornment position="start"><Lock color="primary" fontSize="small" /></InputAdornment>,
@@ -156,12 +156,12 @@ export const ChangePasswordDialog = ({ open, onClose }: Props) => {
                     </Grid>
 
                     <Grid size={{ xs: 12 }}>
-                        <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Confirm New Password</Typography>
+                        <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ ml: 1 }}>Konfirmo Fjalëkalimin e ri</Typography>
                         <TextField
                             fullWidth
                             type={showConfirm ? "text" : "password"}
                             value={confirmPassword}
-                            placeholder={'Confirm your new password'}
+                            placeholder={'Konfirmo Fjalëkalimin e ri'}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             InputProps={{
                                 startAdornment: <InputAdornment position="start"><Lock color="primary" fontSize="small" /></InputAdornment>,
@@ -181,7 +181,7 @@ export const ChangePasswordDialog = ({ open, onClose }: Props) => {
 
             <DialogActions sx={{ p: 3, pt: 1 }}>
                 <Button onClick={onClose} color="inherit" sx={{ borderRadius: 2, px: 3 }}>
-                    Cancel
+                    Mbyll
                 </Button>
                 <Button
                     variant="contained"
@@ -189,7 +189,7 @@ export const ChangePasswordDialog = ({ open, onClose }: Props) => {
                     disabled={saving}
                     sx={{ borderRadius: 2, px: 4, fontWeight: "bold", boxShadow: 3 }}
                 >
-                    {saving ? "Updating..." : "Update Password"}
+                    {saving ? "Duke përditësuar..." : "Përditëso"}
                 </Button>
             </DialogActions>
         </Dialog>

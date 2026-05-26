@@ -24,8 +24,7 @@ import {
     Close,
     AttachMoney,
     TrendingUp,
-    TrendingDown,
-    CheckCircle
+    TrendingDown
 } from "@mui/icons-material";
 import {toast} from "react-toastify";
 import {debtsService} from "../../services/debtsService";
@@ -63,24 +62,24 @@ export function DebtEditPopUp({open, onClose, debtId, onSaved}: DebtEditPopUpPro
                     date: res.date
                 });
             })
-            .catch(err => toast.error(err.message || "Failed to load debt"))
+            .catch(err => toast.error(err.message || "Dështoi ngarkimi i borxhit"))
             .finally(() => setLoading(false));
 
     }, [open, debtId]);
 
     const handleSave = async () => {
-        if (form.amount <= 0) return toast.error("Amount must be greater than 0");
-        if (!form.person.trim()) return toast.error("Person is required");
-        if (!form.description.trim()) return toast.error("Description is required");
+        if (form.amount <= 0) return toast.error("Shuma duhet të jetë më e madhe se 0");
+        if (!form.person.trim()) return toast.error("Personi është i detyrueshëm");
+        if (!form.description.trim()) return toast.error("Përshkrimi është i detyrueshëm");
 
         try {
             setSaving(true);
             await debtsService.updateDebtById(form, debtId);
-            toast.success("Debt updated successfully");
+            toast.success("Borxhi u përditësua me sukses");
             onSaved();
             onClose();
         } catch (e: any) {
-            toast.error(e.message || "Update failed");
+            toast.error(e.message || "Përditësimi dështoi");
         } finally {
             setSaving(false);
         }
@@ -96,7 +95,7 @@ export function DebtEditPopUp({open, onClose, debtId, onSaved}: DebtEditPopUpPro
         >
             <DialogTitle
                 sx={{display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: 800, pb: 1}}>
-                Edit Debt
+                Përditëso Borxhin
                 <IconButton onClick={onClose} size="small">
                     <Close/>
                 </IconButton>
@@ -106,7 +105,9 @@ export function DebtEditPopUp({open, onClose, debtId, onSaved}: DebtEditPopUpPro
                 {loading ? (
                     <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', my: 5}}>
                         <CircularProgress size={40}/>
-                        <Typography sx={{mt: 2}} color="text.secondary">Loading debt details...</Typography>
+                        <Typography sx={{mt: 2}} color="text.secondary">
+                            Duke ngarkuar të dhënat...
+                        </Typography>
                     </Box>
                 ) : (
                     <>
@@ -121,21 +122,22 @@ export function DebtEditPopUp({open, onClose, debtId, onSaved}: DebtEditPopUpPro
                                 {form.type === "LENT" ? <TrendingDown fontSize="large"/> :
                                     <TrendingUp fontSize="large"/>}
                             </Avatar>
+
                             <Box>
-                                <Typography variant="h5" fontWeight="900"
-                                            color={form.type === "LENT" ? "error.main" : "success.main"}>
+                                <Typography variant="h5" fontWeight="900">
                                     ID: #{debtId}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                    Updating debt with {form.person}
+                                    Po përditëson borxhin për {form.person}
                                 </Typography>
                             </Box>
                         </Stack>
 
                         <Grid container spacing={3}>
                             <Grid size={{xs: 12, sm: 6}}>
-                                <Typography variant="overline" fontWeight="700" color="text.secondary"
-                                            sx={{ml: 1}}>Person</Typography>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary">
+                                    Personi
+                                </Typography>
                                 <TextField
                                     fullWidth
                                     value={form.person}
@@ -152,8 +154,9 @@ export function DebtEditPopUp({open, onClose, debtId, onSaved}: DebtEditPopUpPro
                             </Grid>
 
                             <Grid size={{xs: 12, sm: 6}}>
-                                <Typography variant="overline" fontWeight="700" color="text.secondary" sx={{ml: 1}}>Amount
-                                    (€)</Typography>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary">
+                                    Shuma (€)
+                                </Typography>
                                 <TextField
                                     fullWidth
                                     type="number"
@@ -171,8 +174,9 @@ export function DebtEditPopUp({open, onClose, debtId, onSaved}: DebtEditPopUpPro
                             </Grid>
 
                             <Grid size={{xs: 12, sm: 6}}>
-                                <Typography variant="overline" fontWeight="700" color="text.secondary"
-                                            sx={{ml: 1}}>Type</Typography>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary">
+                                    Lloji
+                                </Typography>
                                 <TextField
                                     select
                                     fullWidth
@@ -187,15 +191,15 @@ export function DebtEditPopUp({open, onClose, debtId, onSaved}: DebtEditPopUpPro
                                         sx: {borderRadius: 3}
                                     }}
                                 >
-                                    <MenuItem value="LENT">Lent (I gave)</MenuItem>
-                                    <MenuItem value="BORROWED">Borrowed (I took)</MenuItem>
+                                    <MenuItem value="LENT">Dhënë (unë kam dhënë)</MenuItem>
+                                    <MenuItem value="BORROWED">Marrë (unë kam marrë)</MenuItem>
                                 </TextField>
                             </Grid>
 
-
                             <Grid size={{xs: 12, sm: 6}}>
-                                <Typography variant="overline" fontWeight="700" color="text.secondary"
-                                            sx={{ml: 1}}>Date</Typography>
+                                <Typography variant="overline" fontWeight="700" color="text.secondary">
+                                    Data
+                                </Typography>
                                 <TextField
                                     fullWidth
                                     type="date"
@@ -212,7 +216,7 @@ export function DebtEditPopUp({open, onClose, debtId, onSaved}: DebtEditPopUpPro
                                 />
                             </Grid>
 
-                            <Grid size={{ xs: 12 }}>
+                            <Grid size={{xs: 12}}>
                                 <Box sx={{
                                     p: 2,
                                     borderRadius: 3,
@@ -220,10 +224,10 @@ export function DebtEditPopUp({open, onClose, debtId, onSaved}: DebtEditPopUpPro
                                     border: '1px solid',
                                     borderColor: 'divider'
                                 }}>
-                                    <Typography variant="overline" fontWeight="700" color="text.secondary"
-                                                sx={{display: 'block', mb: 1}}>
-                                        Description & Reason
+                                    <Typography variant="overline" fontWeight="700" color="text.secondary">
+                                        Përshkrimi / Arsyeja
                                     </Typography>
+
                                     <TextField
                                         fullWidth
                                         multiline
@@ -233,12 +237,6 @@ export function DebtEditPopUp({open, onClose, debtId, onSaved}: DebtEditPopUpPro
                                         onChange={(e) => setForm({...form, description: e.target.value})}
                                         InputProps={{
                                             disableUnderline: true,
-                                            startAdornment: (
-                                                <InputAdornment position="start"
-                                                                sx={{alignSelf: 'flex-start', mt: 0.5}}>
-                                                    <Description color="primary"/>
-                                                </InputAdornment>
-                                            ),
                                             sx: {fontSize: '0.95rem'}
                                         }}
                                     />
@@ -250,16 +248,16 @@ export function DebtEditPopUp({open, onClose, debtId, onSaved}: DebtEditPopUpPro
             </DialogContent>
 
             <DialogActions sx={{p: 3, pt: 1}}>
-                <Button onClick={onClose} color="inherit" sx={{borderRadius: 2, px: 3}}>
-                    Cancel
+                <Button onClick={onClose} color="inherit">
+                    Anulo
                 </Button>
+
                 <Button
                     variant="contained"
                     onClick={handleSave}
                     disabled={saving || loading}
-                    sx={{borderRadius: 2, px: 4, fontWeight: "bold", boxShadow: 3}}
                 >
-                    {saving ? "Saving..." : "Update Debt"}
+                    {saving ? "Duke ruajtur..." : "Përditëso Borxhin"}
                 </Button>
             </DialogActions>
         </Dialog>

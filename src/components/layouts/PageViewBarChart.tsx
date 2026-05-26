@@ -15,7 +15,6 @@ interface FinancialBarChartProps {
 export default function FinancialBarChart({ transactions }: FinancialBarChartProps) {
     const theme = useTheme();
 
-    // Check if the screen is mobile (width less than 600px)
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const getLast6Months = () => {
@@ -56,7 +55,7 @@ export default function FinancialBarChart({ transactions }: FinancialBarChartPro
         <Card variant="outlined" sx={{ width: '100%', borderRadius: 3 }}>
             <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                 <Typography component="h2" variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold' }}>
-                    Last 6 Months
+                    6 Muajt e fundit
                 </Typography>
 
                 <Stack
@@ -68,14 +67,13 @@ export default function FinancialBarChart({ transactions }: FinancialBarChartPro
                         <Typography variant={isMobile ? "h5" : "h4"} sx={{ fontWeight: '800' }}>
                             €{totalIncome.toLocaleString()}
                         </Typography>
-                        <Chip size="small" color="primary" label="Total Income" />
+                        <Chip size="small" color="primary" label="Totali i të ardhurave" />
                     </Stack>
                     <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                        Income vs Expenses
+                        Të hyrat kundër shpenzimeve
                     </Typography>
                 </Stack>
 
-                {/* Container for the chart to handle overflow if needed */}
                 <Box sx={{ width: '100%', height: isMobile ? 250 : 300 }}>
                     <BarChart
                         borderRadius={6}

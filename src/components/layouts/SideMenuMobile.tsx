@@ -19,7 +19,6 @@ interface SideMenuMobileProps {
 export default function SideMenuMobile({open, toggleDrawer}: SideMenuMobileProps) {
     const navigate = useNavigate()
     const logout = () => {
-        console.log("Logout clicked");
         localStorage.removeItem("token");
         navigate("/login");
     }
@@ -68,7 +67,7 @@ export default function SideMenuMobile({open, toggleDrawer}: SideMenuMobileProps
                     <Divider/>
                 </Stack> <Stack sx={{p: 2}}>
                 <Button onClick={logout} variant="outlined" fullWidth startIcon={<LogoutRoundedIcon/>}>
-                    Logout
+                    Shkyçu
                 </Button>
             </Stack>
             </Stack>

@@ -45,6 +45,9 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
         debt &&
         debt.status !== "PAID";
 
+    const canDelete =
+        user?.isActive && debt
+
     useEffect(() => {
         if (!open) return;
         setLoading(true);
@@ -54,6 +57,17 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
     }, [open, debtId]);
 
     const progress = debt ? (debt.paidAmount / debt.amount) * 100 : 0;
+
+    const TYPE_LABELS: Record<string, string> = {
+        LENT: "Kam dhënë borxh ",
+        BORROWED: "Kam marrë borxh",
+    };
+
+    const STATUS_LABELS: Record<string, string> = {
+        PAID: "E paguar",
+        PARTIAL: "Pjesërisht e paguar",
+        PENDING: "Në proces",
+    };
 
     const handlePay = async () => {
         if (!debt || !payAmount || Number(payAmount) <= 0) return toast.warning("Please enter a valid amount to pay.");
@@ -88,7 +102,7 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
             >
                 <DialogTitle
                     sx={{display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: 800}}>
-                    Debt Details
+                    Detajet e Borxhit
                     <IconButton onClick={onClose} size="small">
                         <CloseIcon/>
                     </IconButton>
@@ -101,7 +115,6 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
                         </Box>
                     ) : debt && (
                         <>
-                            {/* HEADER SECTION */}
                             <Stack direction="row" alignItems="center" spacing={2} sx={{mb: 4, mt: 1}}>
                                 <Avatar sx={{
                                     width: 64,
@@ -118,15 +131,17 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
                                     </Typography>
                                     <Stack direction="row" spacing={1} alignItems="center">
                                         <Chip
-                                            label={debt.type}
+                                            label={TYPE_LABELS[debt.type] || debt.type}
                                             size="small"
                                             variant="outlined"
                                             color={debt.type === "LENT" ? "error" : "success"}
-                                            sx={{fontWeight: 'bold', fontSize: '0.7rem'}}
+                                            sx={{fontWeight: "bold", fontSize: "0.7rem"}}
                                         />
+
                                         <Typography variant="body2" color="text.secondary">
-                                            {debt.status}
+                                            {STATUS_LABELS[debt.status] || debt.status}
                                         </Typography>
+
                                     </Stack>
                                 </Box>
                                 <Chip
@@ -147,7 +162,7 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
                                     <Paper variant="outlined"
                                            sx={{p: 1.5, textAlign: 'center', borderRadius: 3, bgcolor: 'action.hover'}}>
                                         <Typography variant="caption" fontWeight="bold"
-                                                    color="text.secondary">TOTAL</Typography>
+                                                    color="text.secondary">TOTALI</Typography>
                                         <Typography fontWeight="900"
                                                     sx={{color: 'text.primary'}}>€{debt.amount}</Typography>
                                     </Paper>
@@ -156,7 +171,7 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
                                     <Paper variant="outlined"
                                            sx={{p: 1.5, textAlign: 'center', borderRadius: 3, bgcolor: 'action.hover'}}>
                                         <Typography variant="caption" fontWeight="bold"
-                                                    color="text.secondary">PAID</Typography>
+                                                    color="text.secondary">PAGUAR</Typography>
                                         <Typography fontWeight="900"
                                                     color="success.main">€{debt.paidAmount}</Typography>
                                     </Paper>
@@ -165,14 +180,13 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
                                     <Paper variant="outlined"
                                            sx={{p: 1.5, textAlign: 'center', borderRadius: 3, bgcolor: 'action.hover'}}>
                                         <Typography variant="caption" fontWeight="bold"
-                                                    color="text.secondary">DUE</Typography>
+                                                    color="text.secondary">MBETJA</Typography>
                                         <Typography fontWeight="900"
                                                     color="error.main">€{debt.remainingAmount}</Typography>
                                     </Paper>
                                 </Grid>
                             </Grid>
 
-                            {/* PROGRESS BAR */}
                             <Box sx={{mb: 4, px: 1}}>
                                 <LinearProgress
                                     variant="determinate"
@@ -195,7 +209,7 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
                             }}>
                                 <Typography variant="subtitle2" fontWeight="800"
                                             sx={{mb: 2, display: 'flex', alignItems: 'center', gap: 1}}>
-                                    <PaymentIcon fontSize="small" color="primary"/> Quick Payment
+                                    <PaymentIcon fontSize="small" color="primary"/> Pagesë e shpejtë
                                 </Typography>
 
                                 {debt.status === "PAID" ? (
@@ -213,7 +227,7 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
                                             alignItems: 'center',
                                             gap: 1
                                         }}>
-                                            <CheckCircleOutlineIcon/> Fully Settled
+                                            <CheckCircleOutlineIcon/> Borxhi është i paguar 🎉
                                         </Typography>
                                     </Box>
                                 ) : (
@@ -242,14 +256,15 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
                             </Paper>
 
                             <Box sx={{mt: 3, p: 2, bgcolor: 'action.hover', borderRadius: 3}}>
-                                <Typography variant="caption" fontWeight="bold" color="text.secondary">REASON /
-                                    DESCRIPTION</Typography>
+                                <Typography variant="caption" fontWeight="bold" color="text.secondary">Përshkrimi /
+                                    Arsyeja
+                                </Typography>
                                 <Typography variant="body2" sx={{
                                     mt: 0.5,
                                     color: 'text.primary',
                                     fontStyle: debt.description ? 'normal' : 'italic'
                                 }}>
-                                    {debt.description || "No description provided."}
+                                    {debt.description}
                                 </Typography>
                             </Box>
                         </>
@@ -257,13 +272,13 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
                 </DialogContent>
 
                 <DialogActions sx={{p: 3}}>
-                    {canModify && (
+                    {canDelete && (
                         <Button
                             onClick={() => setDeleteOpen(true)}
                             color="error"
                             sx={{fontWeight: 'bold'}}
                         >
-                            Delete
+                            Fshij
                         </Button>
                     )}
                     <Box sx={{flexGrow: 1}}/>
@@ -273,11 +288,11 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
                             startIcon={<EditIcon/>}
                             sx={{borderRadius: 2, fontWeight: 'bold'}}
                         >
-                            Edit
+                            Përditëso
                         </Button>
                     )}
                     <Button variant="outlined" onClick={onClose} sx={{borderRadius: 2, fontWeight: 'bold'}}>
-                        Close
+                        Mbyll
                     </Button>
                 </DialogActions>
             </Dialog>

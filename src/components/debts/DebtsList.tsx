@@ -122,14 +122,28 @@ export function DebtsList() {
     ];
 
     const barData = [
-        {name: "Total", total: totalDebt},
-        {name: "Paid", total: totalPaid},
-        {name: "Remaining", total: totalRemaining}
+        {name: "Totali", total: totalDebt},
+        {name: "Paguar", total: totalPaid},
+        {name: "Mbetja", total: totalRemaining}
     ];
 
     const COLORS = ["#2e7d32", "#d32f2f"];
 
-    const StatusChip = ({status}: any) => {
+    const TYPE_LABELS: Record<string, string> = {
+        LENT: "Kam dhënë borxh ",
+        BORROWED: "Kam marrë borxh ",
+    };
+
+    const STATUS_LABELS: Record<string, string> = {
+        PAID: "E paguar",
+        PARTIAL: "Pjesërisht",
+        PENDING: "Në proces",
+    };
+
+
+    const StatusChip = ({ status }: any) => {
+        const label = STATUS_LABELS[status] || status;
+
         const color =
             status === "PAID"
                 ? "success"
@@ -137,16 +151,19 @@ export function DebtsList() {
                     ? "warning"
                     : "error";
 
-        return <Chip label={status} size="small" color={color}/>;
+        return <Chip label={label} size="small" color={color} />;
     };
 
-    const TypeChip = ({type}: any) => (
-        <Chip
-            label={type}
-            size="small"
-            color={type === "LENT" ? "error" : "primary"}
-        />
-    );
+    const TypeChip = ({ type }: any) => {
+        const label = TYPE_LABELS[type] || type;
+
+        const color =
+            type === "LENT"
+                ? "error"
+                : "primary";
+
+        return <Chip label={label} size="small" color={color} />;
+    };
 
     const getProgress = (debt: any) => {
         if (!debt.amount) return 0;
@@ -247,7 +264,7 @@ export function DebtsList() {
 
     return (
         <PageContainer
-            title="Debts"
+            title="Borxhet"
             sx={{
                 minHeight: "100dvh",
                 overflowX: "hidden",
@@ -256,53 +273,53 @@ export function DebtsList() {
         >
 
             <Stack direction="row" justifyContent="space-between" sx={{mb: 2}}>
-                <Typography variant="h6">Debts Dashboard</Typography>
+                <Typography variant="h6">Paneli i Borxheve</Typography>
 
                 <Button
                     variant="contained"
                     startIcon={<AddIcon/>}
                     onClick={() => setOpenCreate(true)}
                 >
-                    Create
+                    Krijo
                 </Button>
             </Stack>
 
             <Stack direction="row" spacing={1} sx={{mb: 2, flexWrap: "wrap"}}>
-                    <Chip label="All Status"
-                          clickable
-                          color={statusFilter === "ALL" ? "primary" : "default"}
-                          onClick={() => setStatusFilter("ALL")}/>
+                <Chip label="Të gjitha statuset"
+                      clickable
+                      color={statusFilter === "ALL" ? "primary" : "default"}
+                      onClick={() => setStatusFilter("ALL")}/>
 
-                    <Chip label="Paid"
-                          clickable
-                          color={statusFilter === "PAID" ? "success" : "default"}
-                          onClick={() => setStatusFilter("PAID")}/>
+                <Chip label="Të paguara"
+                      clickable
+                      color={statusFilter === "PAID" ? "success" : "default"}
+                      onClick={() => setStatusFilter("PAID")}/>
 
-                    <Chip label="In Progress"
-                          clickable
-                          color={statusFilter === "IN_PROGRESS" ? "warning" : "default"}
-                          onClick={() => setStatusFilter("IN_PROGRESS")}/>
+                <Chip label="Në proces"
+                      clickable
+                      color={statusFilter === "IN_PROGRESS" ? "warning" : "default"}
+                      onClick={() => setStatusFilter("IN_PROGRESS")}/>
 
-                    <Chip label="All Types"
-                          clickable
-                          color={typeFilter === "ALL" ? "primary" : "default"}
-                          onClick={() => setTypeFilter("ALL")}/>
+                <Chip label="Të gjitha llojet"
+                      clickable
+                      color={typeFilter === "ALL" ? "primary" : "default"}
+                      onClick={() => setTypeFilter("ALL")}/>
 
-                    <Chip label="Lent"
-                          clickable
-                          color={typeFilter === "LENT" ? "error" : "default"}
-                          onClick={() => setTypeFilter("LENT")}/>
+                <Chip label="Të dhëna (Lent)"
+                      clickable
+                      color={typeFilter === "LENT" ? "error" : "default"}
+                      onClick={() => setTypeFilter("LENT")}/>
 
-                    <Chip label="Borrowed"
-                          clickable
-                          color={typeFilter === "BORROWED" ? "info" : "default"}
-                          onClick={() => {
-                              setTypeFilter("BORROWED");
-                          }}/>
-                </Stack>
+                <Chip label="Të marra (Borrowed)"
+                      clickable
+                      color={typeFilter === "BORROWED" ? "info" : "default"}
+                      onClick={() => {
+                          setTypeFilter("BORROWED");
+                      }}/>
+            </Stack>
 
             <TextField
-                label="Search person"
+                label="Kërko personin"
                 size="small"
                 value={personFilter}
                 onChange={(e) => setPersonFilter(e.target.value)}
@@ -321,15 +338,32 @@ export function DebtsList() {
                            onChange={(e) => setToDate(e.target.value)}/>
 
                 <Button variant="outlined" onClick={clearFilters}>
-                    Clear
+                    Pastro
                 </Button>
             </Stack>
 
             {/* SUMMARY */}
             <Stack direction={{xs: "column", md: "row"}} spacing={2} sx={{mb: 3}}>
-                <Card sx={{flex: 1}}><CardContent><Typography>Total</Typography><Typography>€{totalDebt}</Typography></CardContent></Card>
-                <Card sx={{flex: 1}}><CardContent><Typography>Paid</Typography><Typography color="success.main">€{totalPaid}</Typography></CardContent></Card>
-                <Card sx={{flex: 1}}><CardContent><Typography>Remaining</Typography><Typography color="error.main">€{totalRemaining}</Typography></CardContent></Card>
+                <Card sx={{flex: 1}}>
+                    <CardContent>
+                        <Typography>Total</Typography>
+                        <Typography>€{totalDebt}</Typography>
+                    </CardContent>
+                </Card>
+
+                <Card sx={{flex: 1}}>
+                    <CardContent>
+                        <Typography>Të paguara</Typography>
+                        <Typography color="success.main">€{totalPaid}</Typography>
+                    </CardContent>
+                </Card>
+
+                <Card sx={{flex: 1}}>
+                    <CardContent>
+                        <Typography>Mbetur</Typography>
+                        <Typography color="error.main">€{totalRemaining}</Typography>
+                    </CardContent>
+                </Card>
             </Stack>
 
             {/* GRID */}
@@ -361,7 +395,7 @@ export function DebtsList() {
 
                 <Card sx={{flex: 1, width: "100%"}}>
                     <CardContent>
-                        <Typography fontWeight="bold">Paid vs Remaining</Typography>
+                        <Typography fontWeight="bold">Të Paguara vs Në proces</Typography>
                         <ResponsiveContainer width="100%" height={250}>
                             <PieChart>
                                 <Pie data={pieData} dataKey="value" outerRadius={90}>
@@ -391,7 +425,6 @@ export function DebtsList() {
 
             </Stack>
 
-            {/* POPUPS */}
             {selectedDebtId && (
                 <DebtDetailsPopUp
                     open={detailsOpen}

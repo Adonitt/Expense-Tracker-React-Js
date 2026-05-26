@@ -45,7 +45,6 @@ export function TransactionDetailsPopUp({open, onClose, transactionId, onDetails
     const user = getLoggedInUser()
     const canModify =
         user?.isActive &&
-        transaction?.type !== "DEBT" &&
         transaction?.status !== "INACTIVE";
 
     useEffect(() => {
@@ -61,7 +60,33 @@ export function TransactionDetailsPopUp({open, onClose, transactionId, onDetails
 
     const handleEditClick = () => setEditPopUpOpen(true);
     const handleDeleteClick = () => setDeletePopUpOpen(true);
+    const incomeCategoryLabel: any = {
+        DEBT:"Borxh",
+        SALARY: "Rrogë",
+        FREELANCE: "Freelance",
+        BUSINESS: "Biznes",
+        INVESTMENT: "Investim",
+        GIFTS: "Dhurata",
+        SAVINGS: "Kursime",
+        OTHER: "Tjetër"
+    };
 
+    const expenseCategoryLabel: any = {
+        DEBT:"Borxh",
+        RENT: "Qira",
+        GROCERIES: "Ushqime",
+        UTILITIES: "Fatura",
+        SUBSCRIPTIONS: "Abonime",
+        TRANSPORT: "Transport",
+        HEALTHCARE: "Shëndetësi",
+        ENTERTAINMENT: "Argëtim",
+        EDUCATION: "Arsim",
+        TAXES: "Taksë",
+        INSURANCE: "Sigurim",
+        SHOPPING: "Pazar",
+        TRAVEL: "Udhëtim",
+        OTHER: "Tjetër"
+    };
     return (
         <>
             <Dialog
@@ -76,7 +101,7 @@ export function TransactionDetailsPopUp({open, onClose, transactionId, onDetails
                     }
                 }}
             >
-                <DialogTitle sx={{fontWeight: 800, pb: 1}}>Transaction Details</DialogTitle>
+                <DialogTitle sx={{fontWeight: 800, pb: 1}}>Detajet e transaksionit</DialogTitle>
 
                 <DialogContent dividers sx={{borderBottom: 'none'}}>
                     {loading && <CircularProgress sx={{display: 'block', mx: 'auto', my: 5}}/>}
@@ -105,12 +130,18 @@ export function TransactionDetailsPopUp({open, onClose, transactionId, onDetails
                                     </Typography>
                                 </Box>
                                 <Box sx={{ml: 'auto !important'}}>
-                                    <Chip
-                                        label={transaction.category}
-                                        color={transaction.type === "INCOME" ? "success" : "error"}
-                                        variant="outlined"
-                                        sx={{fontWeight: 'bold'}}
-                                    />
+                                    <Box sx={{ ml: 'auto !important' }}>
+                                        <Chip
+                                            label={
+                                                transaction.type === "INCOME"
+                                                    ? incomeCategoryLabel[transaction.category] || transaction.category
+                                                    : expenseCategoryLabel[transaction.category] || transaction.category
+                                            }
+                                            color={transaction.type === "INCOME" ? "success" : "error"}
+                                            variant="outlined"
+                                            sx={{ fontWeight: 'bold' }}
+                                        />
+                                    </Box>
                                 </Box>
                             </Stack>
 
@@ -119,7 +150,7 @@ export function TransactionDetailsPopUp({open, onClose, transactionId, onDetails
                                     <Paper variant="outlined" sx={{p: 2, borderRadius: 3, bgcolor: 'action.hover'}}>
                                         <Typography variant="caption" color="text.secondary"
                                                     sx={{display: 'block', mb: 0.5, fontWeight: 'bold'}}>
-                                            DESCRIPTION
+                                            Përshkrimi / Arsyeja
                                         </Typography>
                                         <Typography variant="body1"
                                                     sx={{fontStyle: transaction.description ? 'normal' : 'italic'}}>
@@ -132,33 +163,24 @@ export function TransactionDetailsPopUp({open, onClose, transactionId, onDetails
                                     <Stack direction="row" spacing={1} alignItems="center">
                                         <CalendarTodayIcon fontSize="small" color="action"/>
                                         <Box>
-                                            <Typography variant="caption" color="text.secondary">Date</Typography>
+                                            <Typography variant="caption" color="text.secondary">Data</Typography>
                                             <Typography variant="body2" fontWeight="600">{transaction.date}</Typography>
                                         </Box>
                                     </Stack>
                                 </Grid>
 
-                                <Grid item xs={12} sm={6}>
-                                    <Stack direction="row" spacing={1} alignItems="center">
-                                        <UpdateIcon fontSize="small" color="action"/>
-                                        <Box>
-                                            <Typography variant="caption" color="text.secondary">User</Typography>
-                                            <Typography variant="body2"
-                                                        fontWeight="600">{transaction.userFullName}</Typography>
-                                        </Box>
-                                    </Stack>
-                                </Grid>
+
 
                                 <Grid item xs={12}><Divider sx={{my: 1}}/></Grid>
 
                                 <Grid item xs={12} sm={6}>
-                                    <Typography variant="caption" color="text.secondary">Created At</Typography>
+                                    <Typography variant="caption" color="text.secondary">U krijua më</Typography>
                                     <Typography
                                         variant="body2">{new Date(transaction.createdAt).toLocaleString()}</Typography>
                                 </Grid>
 
                                 <Grid item xs={12} sm={6}>
-                                    <Typography variant="caption" color="text.secondary">Last Update</Typography>
+                                    <Typography variant="caption" color="text.secondary">Përditësimi i fundit</Typography>
                                     <Typography variant="body2">
                                         {transaction.updatedAt ? new Date(transaction.updatedAt).toLocaleString() : '-'}
                                     </Typography>
@@ -176,7 +198,7 @@ export function TransactionDetailsPopUp({open, onClose, transactionId, onDetails
                         onClick={onClose}
                         sx={{borderRadius: 2}}
                     >
-                        Close
+                        Mbyll
                     </Button>
 
                     {canModify && (
@@ -188,7 +210,7 @@ export function TransactionDetailsPopUp({open, onClose, transactionId, onDetails
                                 onClick={handleEditClick}
                                 sx={{ borderRadius: 2 }}
                             >
-                                Edit
+                                Përditëso
                             </Button>
 
                             <Button
@@ -198,7 +220,7 @@ export function TransactionDetailsPopUp({open, onClose, transactionId, onDetails
                                 onClick={handleDeleteClick}
                                 sx={{ borderRadius: 2 }}
                             >
-                                Delete
+                                Fshij
                             </Button>
                         </Stack>
                     )}
