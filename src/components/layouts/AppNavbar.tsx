@@ -53,7 +53,7 @@ export default function AppNavbar() {
                     sx={{
                         alignItems: 'center',
                         flexGrow: 1,
-                        width: '100%',
+                        width: '96%',
                         gap: 1,
                     }}
                 >
@@ -67,10 +67,10 @@ export default function AppNavbar() {
                             Dashboard
                         </Typography>
                     </Stack>
-                    <ColorModeIconDropdown/>
-                    <MenuButton aria-label="menu" onClick={toggleDrawer(true)}>
-                        {/*<MenuRoundedIcon />*/}
-                    </MenuButton>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                        <ColorModeIconDropdown />
+                    </Box>
+                    <MenuButton aria-label="menu" onClick={toggleDrawer(true)}/>
                     <SideMenuMobile open={open} toggleDrawer={toggleDrawer}/>
                 </Stack>
             </Toolbar>

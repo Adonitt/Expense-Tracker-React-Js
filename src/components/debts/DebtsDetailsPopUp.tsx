@@ -56,7 +56,7 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
     const progress = debt ? (debt.paidAmount / debt.amount) * 100 : 0;
 
     const handlePay = async () => {
-        if (!debt || !payAmount || Number(payAmount) <= 0) return;
+        if (!debt || !payAmount || Number(payAmount) <= 0) return toast.warning("Please enter a valid amount to pay.");
 
         setPaying(true);
         try {
@@ -232,7 +232,6 @@ export function DebtDetailsPopUp({open, onClose, debtId, onDetails}: any) {
                                         />
                                         <Button
                                             variant="contained"
-                                            disabled={paying || !payAmount || user?.isActive}
                                             onClick={handlePay}
                                             sx={{borderRadius: 3, px: 3, fontWeight: 'bold'}}
                                         >

@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { Container, Stack, Divider, Skeleton, useTheme } from '@mui/material';
+import {Container, Stack, Divider, Skeleton, useTheme} from '@mui/material';
 import Copyright from '../../internals/components/Copyright';
-import StatCard, { type StatCardProps } from "./StatCard.tsx";
+import StatCard, {type StatCardProps} from "./StatCard.tsx";
 import FinancialBarChart from "./PageViewBarChart.tsx";
 
 // API Services
-import { transactionsService } from "../../services/transactionsService.ts";
-import { debtsService, type DebtsListPayload } from "../../services/debtsService.ts"; // Ensure this import is correct
+import {transactionsService} from "../../services/transactionsService.ts";
+import {debtsService, type DebtsListPayload} from "../../services/debtsService.ts"; // Ensure this import is correct
 
 export default function MainGrid() {
     const theme = useTheme();
@@ -141,31 +141,30 @@ export default function MainGrid() {
         },
     ];
 
-    // Transactions Card is added, kept userRole as ADMIN
     const statCards = userRole === "ADMIN"
         ? [...baseCards, {
             title: 'Transactions',
             value: `${monthlyTransactions.length}`,
             interval: 'This month',
             trend: 'neutral',
-            data: [incomeTotal, expenseTotal], // Simplified comparison for transaction sparkline
+            data: [incomeTotal, expenseTotal],
         } as StatCardProps]
         : baseCards;
 
-    // Loading State with Skeletons for a modern UI
-    if (loading) return <DashboardSkeleton />;
+    if (loading) return <DashboardSkeleton/>;
 
     return (
-        <Box sx={{ width: '100%', maxWidth: '1800px', p: { xs: 2, md: 4 } }}>
+        <Box sx={{
+            width: '100%', maxWidth: '1800px'
+        }}>
 
-            {/* Elegant Header Area */}
-            <Box sx={{ mb: 5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            < Box sx={{mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                 <Box>
-                    <Typography component="h1" variant="h3" sx={{ fontWeight: 900, letterSpacing: '-1.5px' }}>
+                    <Typography component="h1" variant="h3" sx={{fontWeight: 900, letterSpacing: '-1.5px', marginTop:4}}>
                         Financial Overview
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
-                        Real-time flow for {now.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                        Real-time flow for {now.toLocaleString('default', {month: 'long', year: 'numeric'})}
                     </Typography>
                 </Box>
             </Box>
@@ -178,29 +177,37 @@ export default function MainGrid() {
                 ))}
             </Grid>
 
-            <Divider sx={{ my: 6 }} />
+            <Divider sx={{my: 6}}/>
 
-            <Typography component="h2" variant="h5" sx={{ mb: 3, fontWeight: 700, px: 1 }}>
+            <Typography component="h2" variant="h5" sx={{mb: 3, fontWeight: 700, px: 1}}>
                 Historical Cash Flow vs Debt Accumulation
             </Typography>
-            <Box sx={{ p: { xs: 2, md: 3 }, bgcolor: 'background.paper', borderRadius: 4, boxShadow: '0 8px 32px rgba(0,0,0,0.05)', border: '1px solid', borderColor: 'divider' }}>
-                <FinancialBarChart transactions={transactions} debts={debts} />
+            <Box sx={{
+                p: {xs: 2, md: 3},
+                bgcolor: 'background.paper',
+                borderRadius: 4,
+                boxShadow: '0 8px 32px rgba(0,0,0,0.05)',
+                border: '1px solid',
+                borderColor: 'divider'
+            }}>
+                <FinancialBarChart transactions={transactions} debts={debts}/>
             </Box>
 
-            <Copyright sx={{ my: 6 }} />
+            <Copyright sx={{my: 6}}/>
         </Box>
-    );
+    )
+        ;
 }
 
 function DashboardSkeleton() {
     return (
-        <Box sx={{ p: 4 }}>
-            <Skeleton variant="text" width={400} height={60} sx={{ mb: 2, borderRadius: 2 }} />
-            <Skeleton variant="text" width={200} height={30} sx={{ mb: 5, borderRadius: 1 }} />
+        <Box sx={{p: 4}}>
+            <Skeleton variant="text" width={400} height={60} sx={{mb: 2, borderRadius: 2}}/>
+            <Skeleton variant="text" width={200} height={30} sx={{mb: 5, borderRadius: 1}}/>
             <Grid container spacing={3}>
                 {[1, 2, 3, 4, 5].map((i) => (
                     <Grid item key={i} xs={12} sm={6} md={2.4}>
-                        <Skeleton variant="rectangular" height={150} sx={{ borderRadius: 4 }} />
+                        <Skeleton variant="rectangular" height={150} sx={{borderRadius: 4}}/>
                     </Grid>
                 ))}
             </Grid>

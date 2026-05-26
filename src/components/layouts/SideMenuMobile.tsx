@@ -52,17 +52,15 @@ export default function SideMenuMobile({open, toggleDrawer}: SideMenuMobileProps
                     >
                         <Avatar
                             sizes="small"
-                            alt="Riley Carter"
+                            alt={user?.firstName + " " + user?.lastName}
                             src="/static/images/avatar/7.jpg"
-                            sx={{width: 24, height: 24}}
+                            sx={{width: 36, height: 36}}
                         />
                         <Typography component="p" variant="h6">
                             {user?.firstName + " " + user?.lastName}
                         </Typography>
                     </Stack>
-                    <MenuButton showBadge>
-                        <NotificationsRoundedIcon/>
-                    </MenuButton>
+
                 </Stack>
                 <Divider/>
                 <Stack sx={{flexGrow: 1}}>

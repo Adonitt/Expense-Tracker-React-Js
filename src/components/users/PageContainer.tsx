@@ -52,45 +52,54 @@ export default function PageContainer(props: PageContainerProps) {
     const {children, breadcrumbs, title, actions = null} = props;
 
     return (
-        <Container sx={{flex: 1, display: 'flex', flexDirection: 'column'}}>
-            <Stack sx={{flex: 1, my: 2}} spacing={2}>
-                <Stack>
-                    <PageHeaderBreadcrumbs
-                        aria-label="breadcrumb"
-                        separator={<NavigateNextRoundedIcon fontSize="small"/>}
-                    >
-                        {breadcrumbs
-                            ? breadcrumbs.map((breadcrumb, index) => {
-                                return breadcrumb.path ? (
-                                    <MuiLink
-                                        key={index}
-                                        component={Link}
-                                        underline="hover"
-                                        color="inherit"
-                                        to={breadcrumb.path}
-                                    >
-                                        {breadcrumb.title}
-                                    </MuiLink>
-                                ) : (
-                                    <Typography
-                                        key={index}
-                                        sx={{color: 'text.primary', fontWeight: 600}}
-                                    >
-                                        {breadcrumb.title}
-                                    </Typography>
-                                );
-                            })
-                            : null}
-                    </PageHeaderBreadcrumbs>
-                    <PageContentHeader>
-                        {title ? <Typography variant="h4">{title}</Typography> : null}
-                        <PageHeaderToolbar>{actions}</PageHeaderToolbar>
-                    </PageContentHeader>
-                </Stack>
-                <Box sx={{flex: 1, display: 'flex', flexDirection: 'column'}}>
-                    {children}
-                </Box>
+        <Box
+            sx={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+                minHeight: '100dvh',
+                px: {xs: 1, md: 3},
+                boxSizing: 'border-box'
+            }}
+        > <Stack sx={{flex: 1, my: 2}} spacing={2}>
+            <Stack>
+                <PageHeaderBreadcrumbs
+                    aria-label="breadcrumb"
+                    separator={<NavigateNextRoundedIcon fontSize="small"/>}
+                >
+                    {breadcrumbs
+                        ? breadcrumbs.map((breadcrumb, index) => {
+                            return breadcrumb.path ? (
+                                <MuiLink
+                                    key={index}
+                                    component={Link}
+                                    underline="hover"
+                                    color="inherit"
+                                    to={breadcrumb.path}
+                                >
+                                    {breadcrumb.title}
+                                </MuiLink>
+                            ) : (
+                                <Typography
+                                    key={index}
+                                    sx={{color: 'text.primary', fontWeight: 600}}
+                                >
+                                    {breadcrumb.title}
+                                </Typography>
+                            );
+                        })
+                        : null}
+                </PageHeaderBreadcrumbs>
+                <PageContentHeader>
+                    {title ? <Typography variant="h4">{title}</Typography> : null}
+                    <PageHeaderToolbar>{actions}</PageHeaderToolbar>
+                </PageContentHeader>
             </Stack>
-        </Container>
+            <Box sx={{flex: 1, display: 'flex', flexDirection: 'column'}}>
+                {children}
+            </Box>
+        </Stack>
+        </Box>
     );
 }

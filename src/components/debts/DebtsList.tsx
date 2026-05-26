@@ -24,7 +24,17 @@ import {DebtDetailsPopUp} from "./DebtsDetailsPopUp.tsx";
 import {DebtEditPopUp} from "./DebtEditPopUp.tsx";
 import {DebtDeleteDialog} from "./DebtDeleteDialog.tsx";
 
-import {Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import {
+    Bar,
+    BarChart,
+    Cell,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis
+} from "recharts";
 
 export function DebtsList() {
 
@@ -32,7 +42,7 @@ export function DebtsList() {
     const [loading, setLoading] = useState(false);
 
     const [page, setPage] = useState(1);
-    const pageSize = 6;
+    const pageSize = 3;
 
     const [fromDate, setFromDate] = useState("");
     const [toDate, setToDate] = useState("");
@@ -58,9 +68,11 @@ export function DebtsList() {
             .then(res => setDebts(res || []))
             .finally(() => setLoading(false));
     };
+
     useEffect(() => {
         fetchDebts();
     }, []);
+
     const clearFilters = () => {
         setPersonFilter("");
         setFromDate("");
@@ -154,12 +166,11 @@ export function DebtsList() {
                     borderRadius: 3,
                     cursor: "pointer",
                     transition: "0.2s",
-                    "&:hover": { transform: "scale(1.02)" },
+                    "&:hover": {transform: "scale(1.02)"},
                     height: "100%",
                     display: "flex",
                     flexDirection: "column",
-                    p: 1,
-                    mb: 1
+                    p: 1
                 }}
             >
                 <CardContent>
@@ -235,7 +246,14 @@ export function DebtsList() {
     };
 
     return (
-        <PageContainer title="Debts">
+        <PageContainer
+            title="Debts"
+            sx={{
+                minHeight: "100dvh",
+                overflowX: "hidden",
+                px: {xs: 1, md: 3}
+            }}
+        >
 
             <Stack direction="row" justifyContent="space-between" sx={{mb: 2}}>
                 <Typography variant="h6">Debts Dashboard</Typography>
@@ -249,161 +267,129 @@ export function DebtsList() {
                 </Button>
             </Stack>
 
-            {/* FILTERS */}
-            <Stack direction="row" spacing={1} sx={{mb: 2}}>
-                <Chip label="All Status"
-                      clickable
-                      color={statusFilter === "ALL" ? "primary" : "default"}
-                      onClick={() => setStatusFilter("ALL")}/>
+            <Stack direction="row" spacing={1} sx={{mb: 2, flexWrap: "wrap"}}>
+                    <Chip label="All Status"
+                          clickable
+                          color={statusFilter === "ALL" ? "primary" : "default"}
+                          onClick={() => setStatusFilter("ALL")}/>
 
-                <Chip label="Paid"
-                      clickable
-                      color={statusFilter === "PAID" ? "success" : "default"}
-                      onClick={() => setStatusFilter("PAID")}/>
+                    <Chip label="Paid"
+                          clickable
+                          color={statusFilter === "PAID" ? "success" : "default"}
+                          onClick={() => setStatusFilter("PAID")}/>
 
-                <Chip label="In Progress"
-                      clickable
-                      color={statusFilter === "IN_PROGRESS" ? "warning" : "default"}
-                      onClick={() => setStatusFilter("IN_PROGRESS")}/>
+                    <Chip label="In Progress"
+                          clickable
+                          color={statusFilter === "IN_PROGRESS" ? "warning" : "default"}
+                          onClick={() => setStatusFilter("IN_PROGRESS")}/>
 
-                <Chip label="All Types"
-                      clickable
-                      color={typeFilter === "ALL" ? "primary" : "default"}
-                      onClick={() => setTypeFilter("ALL")}/>
+                    <Chip label="All Types"
+                          clickable
+                          color={typeFilter === "ALL" ? "primary" : "default"}
+                          onClick={() => setTypeFilter("ALL")}/>
 
-                <Chip label="Lent"
-                      clickable
-                      color={typeFilter === "LENT" ? "error" : "default"}
-                      onClick={() => setTypeFilter("LENT")}/>
+                    <Chip label="Lent"
+                          clickable
+                          color={typeFilter === "LENT" ? "error" : "default"}
+                          onClick={() => setTypeFilter("LENT")}/>
 
-                <Chip label="Borrowed"
-                      clickable
-                      color={typeFilter === "BORROWED" ? "info" : "default"}
-                      onClick={() => {
-                          setTypeFilter("BORROWED");
-                      }}/>
-            </Stack>
+                    <Chip label="Borrowed"
+                          clickable
+                          color={typeFilter === "BORROWED" ? "info" : "default"}
+                          onClick={() => {
+                              setTypeFilter("BORROWED");
+                          }}/>
+                </Stack>
 
             <TextField
                 label="Search person"
                 size="small"
                 value={personFilter}
                 onChange={(e) => setPersonFilter(e.target.value)}
-                sx={{mb: 3, width: 250}}
+                sx={{mb: 3, width: {xs: "100%", md: 250}}}
             />
-            <Stack direction="row" spacing={2} sx={{mb: 2}}>
 
-                <TextField
-                    label="From date"
-                    type="date"
-                    size="small"
-                    InputLabelProps={{shrink: true}}
-                    value={fromDate}
-                    onChange={(e) => setFromDate(e.target.value)}
-                />
+            <Stack direction={{xs: "column", md: "row"}} spacing={2} sx={{mb: 2}}>
+                <TextField type="date" size="small"
+                           InputLabelProps={{shrink: true}}
+                           value={fromDate}
+                           onChange={(e) => setFromDate(e.target.value)}/>
 
-                <TextField
-                    label="To date"
-                    type="date"
-                    size="small"
-                    InputLabelProps={{shrink: true}}
-                    value={toDate}
-                    onChange={(e) => setToDate(e.target.value)}
-                />
-                <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={clearFilters}
-                >
+                <TextField type="date" size="small"
+                           InputLabelProps={{shrink: true}}
+                           value={toDate}
+                           onChange={(e) => setToDate(e.target.value)}/>
+
+                <Button variant="outlined" onClick={clearFilters}>
                     Clear
                 </Button>
             </Stack>
+
             {/* SUMMARY */}
-            <Stack direction="row" spacing={2} sx={{mb: 3}}>
-                <Card sx={{flex: 1}}>
-                    <CardContent>
-                        <Typography>Total</Typography>
-                        <Typography fontWeight="bold">€{totalDebt}</Typography>
-                    </CardContent>
-                </Card>
-
-                <Card sx={{flex: 1}}>
-                    <CardContent>
-                        <Typography>Paid</Typography>
-                        <Typography fontWeight="bold" color="success.main">
-                            €{totalPaid}
-                        </Typography>
-                    </CardContent>
-                </Card>
-
-                <Card sx={{flex: 1}}>
-                    <CardContent>
-                        <Typography>Remaining</Typography>
-                        <Typography fontWeight="bold" color="error.main">
-                            €{totalRemaining}
-                        </Typography>
-                    </CardContent>
-                </Card>
+            <Stack direction={{xs: "column", md: "row"}} spacing={2} sx={{mb: 3}}>
+                <Card sx={{flex: 1}}><CardContent><Typography>Total</Typography><Typography>€{totalDebt}</Typography></CardContent></Card>
+                <Card sx={{flex: 1}}><CardContent><Typography>Paid</Typography><Typography color="success.main">€{totalPaid}</Typography></CardContent></Card>
+                <Card sx={{flex: 1}}><CardContent><Typography>Remaining</Typography><Typography color="error.main">€{totalRemaining}</Typography></CardContent></Card>
             </Stack>
 
             {/* GRID */}
-            <Box
-                sx={{
-                    display: "grid",
-                    gridTemplateColumns: {
-                        xs: "1fr",
-                        sm: "repeat(2, 1fr)",
-                        md: "repeat(3, 1fr)"
-                    },
-                    gap: 3
-                }}
-            >
+            <Box sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                    xs: "1fr",
+                    sm: "repeat(2, 1fr)",
+                    md: "repeat(3, 1fr)"
+                },
+                gap: 3
+            }}>
                 {paginatedDebts.map(debt => (
                     <DebtCard key={debt.id} debt={debt}/>
                 ))}
             </Box>
 
-            <br/> <Stack direction={{xs: "column", md: "row"}} spacing={3} sx={{mt: 4}}>
-
-            <Card sx={{flex: 1}}>
-                <CardContent>
-                    <Typography fontWeight="bold">Paid vs Remaining</Typography>
-                    <ResponsiveContainer width="100%" height={250}>
-                        <PieChart>
-                            <Pie data={pieData} dataKey="value" outerRadius={90}>
-                                {pieData.map((_, i) => (
-                                    <Cell key={i} fill={COLORS[i]}/>
-                                ))}
-                            </Pie>
-                            <Tooltip/>
-                        </PieChart>
-                    </ResponsiveContainer>
-                </CardContent>
-            </Card>
+            {/* PAGINATION */}
             <Stack alignItems="center" sx={{mt: 3}}>
                 <Pagination
                     count={totalPages}
                     page={page}
                     onChange={(e, value) => setPage(value)}
-                    color="primary"
                 />
             </Stack>
 
-            <Card sx={{flex: 1}}>
-                <CardContent>
-                    <Typography fontWeight="bold">Overview</Typography>
-                    <ResponsiveContainer width="100%" height={250}>
-                        <BarChart data={barData}>
-                            <XAxis dataKey="name"/>
-                            <YAxis/>
-                            <Tooltip/>
-                            <Bar dataKey="total" fill="#1976d2"/>
-                        </BarChart>
-                    </ResponsiveContainer>
-                </CardContent>
-            </Card>
+            {/* CHARTS */}
+            <Stack direction={{xs: "column", md: "row"}} spacing={3} sx={{mt: 4}}>
 
-        </Stack>
+                <Card sx={{flex: 1, width: "100%"}}>
+                    <CardContent>
+                        <Typography fontWeight="bold">Paid vs Remaining</Typography>
+                        <ResponsiveContainer width="100%" height={250}>
+                            <PieChart>
+                                <Pie data={pieData} dataKey="value" outerRadius={90}>
+                                    {pieData.map((_, i) => (
+                                        <Cell key={i} fill={COLORS[i]}/>
+                                    ))}
+                                </Pie>
+                                <Tooltip/>
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </CardContent>
+                </Card>
+
+                <Card sx={{flex: 1, width: "100%"}}>
+                    <CardContent>
+                        <Typography fontWeight="bold">Overview</Typography>
+                        <ResponsiveContainer width="100%" height={250}>
+                            <BarChart data={barData}>
+                                <XAxis dataKey="name"/>
+                                <YAxis/>
+                                <Tooltip/>
+                                <Bar dataKey="total" fill="#1976d2"/>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </CardContent>
+                </Card>
+
+            </Stack>
 
             {/* POPUPS */}
             {selectedDebtId && (
@@ -412,24 +398,6 @@ export function DebtsList() {
                     debtId={selectedDebtId}
                     onClose={() => setDetailsOpen(false)}
                     onDetails={fetchDebts}
-                />
-            )}
-
-            {selectedDebtId && (
-                <DebtEditPopUp
-                    open={editOpen}
-                    debtId={selectedDebtId}
-                    onClose={() => setEditOpen(false)}
-                    onSaved={fetchDebts}
-                />
-            )}
-
-            {selectedDebtId && (
-                <DebtDeleteDialog
-                    open={deleteOpen}
-                    debtId={selectedDebtId}
-                    onClose={() => setDeleteOpen(false)}
-                    onDelete={fetchDebts}
                 />
             )}
 

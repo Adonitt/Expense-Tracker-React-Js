@@ -121,7 +121,7 @@ export function TransactionsList() {
                     onClick={() => setCreatePopUpOpen(true)}
                     sx={{borderRadius: 3, px: 3, py: 1, boxShadow: 3}}
                 >
-                    Add New
+                    Add
                 </Button>
             </Stack>
 

@@ -25,88 +25,94 @@ const mainListItems = [
     {text: 'Debts', icon: <AssignmentRoundedIcon/>, path: '/debts'},
 ];
 
-// Shto këtë listë që të shfaqen butonat e profilit
 const secondaryListItems = [
     {text: 'My Profile', icon: <AccountCircleRoundedIcon/>, action: 'openProfile'},
     {text: 'Change Password', icon: <LockResetRounded/>, action: 'changePassword'},
 ];
 
-export default function MenuContent() {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const user = getLoggedInUser();
+interface MenuContentProps {
+    onCloseSidebar?: () => void;
+}
 
-    const [changePasswordOpen, setChangePasswordOpen] = useState(false);
-    const [profileOpen, setProfileOpen] = useState(false);
-    const [editProfileOpen, setEditProfileOpen] = useState(false);
+    export default function MenuContent({onCloseSidebar}: MenuContentProps) {
 
-    const handleItemClick = (item: any) => {
-        if (item.action === 'changePassword') {
-            setChangePasswordOpen(true);
-        } else if (item.action === 'openProfile') {
-            setProfileOpen(true);
-        } else {
-            navigate(item.path);
-        }
-    };
+        const navigate = useNavigate();
+        const location = useLocation();
+        const user = getLoggedInUser();
 
-    return (
-        <>
-            <Stack sx={{flexGrow: 1, p: 1, justifyContent: 'space-between'}}>
-                {/* LISTA KRYESORE */}
-                <List dense>
-                    {mainListItems.map((item, index) => {
-                        if (item.adminOnly && !hasRole("ADMIN")) return null;
-                        return (
+        const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+        const [profileOpen, setProfileOpen] = useState(false);
+        const [editProfileOpen, setEditProfileOpen] = useState(false);
+
+        const handleItemClick = (item: any) => {
+            if (item.action === 'changePassword') {
+                setChangePasswordOpen(true);
+            } else if (item.action === 'openProfile') {
+                setProfileOpen(true);
+            } else {
+                navigate(item.path);
+            }
+
+            onCloseSidebar?.();
+        };
+
+        return (
+            <>
+                <Stack sx={{flexGrow: 1, p: 1, justifyContent: 'space-between'}}>
+                    <List dense>
+                        {mainListItems.map((item, index) => {
+                            if (item.adminOnly && !hasRole("ADMIN")) return null;
+                            return (
+                                <ListItem key={index} disablePadding sx={{display: 'block'}}>
+                                    <ListItemButton
+                                        selected={location.pathname === item.path}
+                                        onClick={() => {
+                                            navigate(item.path);
+                                            onCloseSidebar?.();
+                                        }}
+                                    >
+                                        <ListItemIcon>{item.icon}</ListItemIcon>
+                                        <ListItemText primary={item.text}/>
+                                    </ListItemButton>
+                                </ListItem>
+                            );
+                        })}
+                    </List>
+
+                    <List dense>
+                        {secondaryListItems.map((item, index) => (
                             <ListItem key={index} disablePadding sx={{display: 'block'}}>
-                                <ListItemButton
-                                    selected={location.pathname === item.path}
-                                    onClick={() => navigate(item.path)}
-                                >
+                                <ListItemButton onClick={() => handleItemClick(item)}>
                                     <ListItemIcon>{item.icon}</ListItemIcon>
                                     <ListItemText primary={item.text}/>
                                 </ListItemButton>
                             </ListItem>
-                        );
-                    })}
-                </List>
+                        ))}
+                    </List>
+                </Stack>
 
-                {/* LISTA E PROFILIT (Poshtë) */}
-                <List dense>
-                    {secondaryListItems.map((item, index) => (
-                        <ListItem key={index} disablePadding sx={{display: 'block'}}>
-                            <ListItemButton onClick={() => handleItemClick(item)}>
-                                <ListItemIcon>{item.icon}</ListItemIcon>
-                                <ListItemText primary={item.text}/>
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-            </Stack>
+                <ChangePasswordDialog
+                    open={changePasswordOpen}
+                    onClose={() => setChangePasswordOpen(false)}
+                />
 
-            {/* DIALOGET */}
-            <ChangePasswordDialog
-                open={changePasswordOpen}
-                onClose={() => setChangePasswordOpen(false)}
-            />
+                <UserDetailsPopUp
+                    open={profileOpen}
+                    onClose={() => setProfileOpen(false)}
+                    userId={user?.id ?? null}
+                    onEdit={() => {
+                        setProfileOpen(false);
+                        setEditProfileOpen(true);
+                    }}
+                />
 
-            <UserDetailsPopUp
-                open={profileOpen}
-                onClose={() => setProfileOpen(false)}
-                userId={user?.id ?? null}
-                onEdit={() => {
-                    setProfileOpen(false);
-                    setEditProfileOpen(true);
-                }}
-            />
-
-            <ProfileEditPopUp
-                open={editProfileOpen}
-                user={user}
-                onClose={() => setEditProfileOpen(false)}
-                onSaved={() => {
-                }}
-            />
-        </>
-    );
-}
+                <ProfileEditPopUp
+                    open={editProfileOpen}
+                    user={user}
+                    onClose={() => setEditProfileOpen(false)}
+                    onSaved={() => {
+                    }}
+                />
+            </>
+        );
+    }
